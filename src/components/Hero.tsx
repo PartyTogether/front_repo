@@ -13,7 +13,7 @@ export default function Hero() {
 
     return (
         <section className="text-center mt-12">
-            <h1 className="text-5xl font-bold mb-4">Mapleland.Together</h1>
+            <h1 className="text-5xl font-bold mb-4">메이플랜드 투게더</h1>
             <p className="text-lg text-gray-600 mb-8">
                 메이플랜드 유저들의 파티구인 최적 사이트
             </p>
@@ -24,7 +24,7 @@ export default function Hero() {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="파티 이름, 보스, 직업 등 검색"
+                        placeholder="사냥터명으로 검색"
                         className="w-full px-5 py-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
                     />
                     <button

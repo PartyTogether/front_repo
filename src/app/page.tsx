@@ -1,21 +1,32 @@
+"use client";
+
+import { useState } from "react";
+import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Hero from "@/components/Hero";
 import DiscordBox from "@/components/DiscordBox";
 import Footer from "@/components/Footer";
 
 export default function Home() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
     return (
-        <main className="flex min-h-screen">
-            <Sidebar />
-            <section className="pl-64 ml-10 px-6 py-12">
-                <Hero />
-                <div className="flex justify-center gap-6 my-12">
-                    <DiscordBox channelName="길드 채팅" channelId="guild" />
-                    <DiscordBox channelName="보스 모집" channelId="boss" />
-                    <DiscordBox channelName="자유 채팅" channelId="free" />
-                </div>
+        <>
+            <Header onMenuClick={() => setMenuOpen(true)} />
+            <Sidebar isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+
+            <main className="pt-16 md:pl-64">
+                <section className="px-4 md:px-6 py-12">
+                    <Hero />
+                    <div className="flex flex-col md:flex-row justify-center gap-6 my-12">
+                        <DiscordBox channelName="망가진 용의 둥지" channelId="guild" />
+                        <DiscordBox channelName="다크 와이번의 둥지" channelId="boss" />
+                        <DiscordBox channelName="불과 어둠의 전장" channelId="free" />
+                    </div>
+
+                </section>
                 <Footer />
-            </section>
-        </main>
+            </main>
+        </>
     );
 }
