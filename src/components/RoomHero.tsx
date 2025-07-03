@@ -26,13 +26,14 @@ export default function RoomHero({
                                  }: RoomHeroProps) {
     const style = {
         title: "text-2xl text-gray-700 font-bold mb-4 text-center",
-        section: "mt-16 bg-gradient-to-r py-6 px-4 ",
-        contBtn: "gap-1 px-4 py-3 rounded-xl text-base font-semibold text-gray-500 hover:text-indigo-600 hover:bg-gray-100 transition-all duration-150",
-        selectedContBtn:"text-indigo-600 hover:text-indigo-600 hover:bg-gray-100 transition-all duration-150",
-        groundBtn: "px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-100 transition-all duration-150",
-        selectedGroundBtn: "text-indigo-600 hover:text-indigo-600 hover:bg-gray-100 transition-all duration-150"
+        section: "mt-16 bg-gradient-to-r pb-1 pt-6 px-4 border-b border-gray-300",
+        contBtn: "gap-1 px-4 py-3 rounded-xl text-base font-semibold text-gray-500 hover:text-#5865F2 hover:bg-gray-100 transition-all duration-150",
+        selectedContBtn:"text-[#5865F2] hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150",
+        groundBtn: "px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150",
+        selectedGroundBtn: "text-[#5865F2] hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150"
 
     }
+
     return (
         <section className={style.section}>
             <h2 className={style.title}>사냥터 선택</h2>
@@ -56,7 +57,7 @@ export default function RoomHero({
                 ))}
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex justify-center gap-2">
                 {continents
                     .find((c) => c.name === selectedContinent)
                     ?.grounds.map((ground) => (

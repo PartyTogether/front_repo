@@ -32,7 +32,7 @@ export default function RoomPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-b ">
+        <div className="min-h-screen bg-white ">
             <Header onMenuClick={() => setMenuOpen(true)} />
 
             <RoomHero
