@@ -40,14 +40,13 @@ type RoomType = {
 };
 
 interface RoomsProps {
-    roomList: RoomType[];
+    roomList: RoomType[] | null;
     handleRoomSelect: (id: number) => void;
     selectedRoom: selectedRoom | null;
 }
 
 export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: RoomsProps) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [rooms, setRooms] = useState<RoomType[]>(roomList);
     const [page, setPage] = useState(0);
     const loaderRef = useRef(null);
 
@@ -96,13 +95,13 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
     }, []);
 
     // 필터링된 방 리스트
-    const filteredRooms = rooms.filter((room) => {
-        if (!searchTerm) return true;
-        return (
-            room.title.includes(searchTerm) ||
-            room.host.includes(searchTerm)
-        );
-    });
+    // const filteredRooms = rooms?.filter((room) => {
+    //     if (!searchTerm) return true;
+    //     return (
+    //         room.title.includes(searchTerm) ||
+    //         room.host.includes(searchTerm)
+    //     );
+    // });
 
     return (
         <section>
@@ -122,7 +121,7 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
 
             {/* 방 리스트 */}
             <div className={style.roomListDiv}>
-                {filteredRooms.map((room) => (
+                {roomList?.map((room) => (
                     <div
                         key={room.id}
                         onClick={() => handleRoomSelect(room.id)}

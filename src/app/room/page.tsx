@@ -25,15 +25,38 @@ interface selectedRoom {
     isFull: boolean;
 }
 
+interface Room {
+    id: number;
+    title: string;
+    desc: string;
+    continent: string;
+    huntingGround: string;
+    host: string;
+    isFull: boolean;
+    currentHead: number;
+    maximumHead: number;
+    channel: string;
+    minimumLv: number;
+    minimumPlayTime: number;
+}
 
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [selectedContinent, setSelectedContinent] = useState("리프레");
+    const [selectedContinent, setSelectedContinent] = useState("");
     const [selectedHuntingGround, setSelectedHuntingGround] = useState("");
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<selectedRoom | null>(null);
-    const [roomList, setRoomList] = useState();
+    const [roomList, setRoomList] = useState<Room[] | null>(null);
 
+    const style = {
+        roomPageDiv: "min-h-screen bg-white",
+        roomSection: "max-w-6xl mx-auto transition-all duration-500 mt-6 gap-6 px-6",
+        isRoomSectionSelectedRoomTrue: "flex flex-col lg:flex-row items-start ",
+        isRoomSectionSelectedRoomFalse: "flex flex-col items-center",
+        roomInfoDiv: "lg:w-3/6 animate-slide-in-left ",
+        isRoomsSelectedRoomTrue: "lg:w-3/6 animate-slide-in-left",
+        isRoomsSelectedRoomFalse: "w-full max-w-3xl",
+    }
 
     const testUsers: users[] = [
         {
@@ -145,7 +168,7 @@ export default function RoomPage() {
             title: "불어둠 좌1 우1 구합니다11111111111",
             desc: "최강 격수보유중",
             continent: "리프레",
-            huntingGround: "블과 어둠의 영역",
+            huntingGround: "불과 어둠의 전장",
             host: "불의를못참음",
             isFull: false,
             currentHead: 4,
@@ -177,6 +200,20 @@ export default function RoomPage() {
     ];
 
     useEffect(() => {
+        console.log("선택된 대륙: ",selectedContinent);
+        console.log("선택된 사냥터: ",selectedHuntingGround);
+        if(selectedContinent){
+            if(selectedHuntingGround){
+                const roomList = testRooms.filter((room) => room.huntingGround === selectedHuntingGround);
+                setRoomList(roomList);
+            }else{
+                const roomList = testRooms.filter((room) => room.continent === selectedContinent);
+                setRoomList(roomList);
+            }
+        }
+    }, [selectedContinent,selectedHuntingGround]);
+
+    useEffect(() => {
         if(selectedRoomId !== null){
             const room = testSelectedRoom.find((room) => room.id === selectedRoomId);
             if(room){
@@ -196,7 +233,7 @@ export default function RoomPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white ">
+        <div className={style.roomPageDiv}>
             <Header onMenuClick={() => setMenuOpen(true)} />
 
             <RoomHero
@@ -209,23 +246,23 @@ export default function RoomPage() {
 
             <div
                 className={cn(
-                    "max-w-6xl mx-auto transition-all duration-500 mt-6 gap-6 px-6",
+                    style.roomSection,
                     selectedRoom
-                        ? "flex flex-col lg:flex-row items-start "
-                        : "flex flex-col items-center"
+                        ? style.isRoomSectionSelectedRoomTrue
+                        : style.isRoomSectionSelectedRoomFalse
                 )}
             >
                 {selectedRoom && (
-                    <div className="lg:w-3/6 animate-slide-in-left ">
+                    <div className={style.roomInfoDiv}>
                         <RoomInfo room={selectedRoom}
                                   onClose={handleRoomInfoClose}
                         />
                     </div>
                 )}
 
-                <div className={cn(selectedRoom ? "lg:w-3/6 animate-slide-in-left" : "w-full max-w-3xl ")}>
+                <div className={cn(selectedRoom ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse)}>
                     <Rooms
-                        roomList={testRooms}
+                        roomList={roomList}
                         handleRoomSelect={handleRoomSelect}
                         selectedRoom={selectedRoom}
                     />
