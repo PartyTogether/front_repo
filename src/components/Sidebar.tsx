@@ -9,7 +9,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     return (
         <>
             {/* PC용 고정 사이드바 */}
-            <aside className="hidden md:block w-70 fixed top-16 left-0 h-[calc(100vh-4rem)] border border-gray-200 rounded-2xl bg-gradient-to-b from-indigo-400 to-indigo-400 text-white px-10 py-8 shadow-lg">
+            <aside className="hidden md:block w-55 fixed top-16 left-0 h-[calc(100vh-4rem)] border border-gray-200 rounded-2xl bg-[#5865F2] text-white px-10 py-8 shadow-lg">
                 <h2 className="text-2xl font-extrabold mb-8 tracking-tight">메투</h2>
                 <nav>
                     <ul className="space-y-4">
