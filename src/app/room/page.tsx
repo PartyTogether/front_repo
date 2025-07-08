@@ -7,6 +7,7 @@ import Rooms from "@/app/room/components/Rooms";
 import RoomInfo from "@/app/room/components/RoomInfo";
 import { cn } from "@/lib/utils";
 import ViewMode from "@/app/room/components/ViewMode";
+import MyRoom from "@/app/room/components/MyRoom";
 
 interface users {
     id: number;
@@ -268,11 +269,15 @@ export default function RoomPage() {
                         viewMode={viewMode}
                         setViewMode={setViewMode}
                     />
-                    <Rooms
-                        roomList={roomList}
-                        handleRoomSelect={handleRoomSelect}
-                        selectedRoom={selectedRoom}
-                    />
+                    {viewMode === "OTHER" ? (
+                        <Rooms
+                            roomList={roomList}
+                            handleRoomSelect={handleRoomSelect}
+                            selectedRoom={selectedRoom}
+                        />
+                    ) : (
+                        <MyRoom />
+                    )}
                 </div>
             </div>
         </div>

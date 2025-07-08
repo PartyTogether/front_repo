@@ -43,7 +43,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
         title: "text-xl font-bold",
         headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500",
         hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-300",
-        partnerListDiv: "grid grid-cols-2 gap-2",
+        partnerListDiv: "grid grid-cols-1 gap-2",
         partnerDiv: "border border-gray-300 rounded-lg text-left py-2 px-2 text-gray-500 font-medium",
     }
 
