@@ -33,17 +33,18 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
     const otherUsers = room.users.filter((user) => user.name !== room.host);
     const [isClosing, setIsClosing] = useState(false);
 
+
     const style = {
-        roomInfoDiv: "bg-white p-5 rounded-lg shadow h-fit sticky transition-transform transition-opacity duration-300",
+        roomInfoDiv: "bg-white p-4 rounded-lg shadow h-fit sticky transition-transform transition-opacity duration-300",
         isClosingTrueAnimate: "animate-slide-out-right",
         isClosingFalseAnimate: "animate-slide-in-left",
         closeBtn: "absolute top-3 right-3 text-gray-400 hover:text-gray-700 focus:outline-none",
         titleDiv: "flex border-b items-center justify-between border-gray-300 mb-5",
         title: "text-xl font-bold",
         headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500",
-        hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-200",
-        partnerListDiv: "grid grid-cols-2 gap-2",
-        partnerDiv: "border border-gray-200 rounded-lg text-left py-2 px-2 text-gray-500 font-medium",
+        hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-300",
+        partnerListDiv: "grid grid-cols-1 gap-2",
+        partnerDiv: "border border-gray-300 rounded-lg text-left py-2 px-2 text-gray-500 font-medium",
     }
 
     const handleCloseClick = () => {

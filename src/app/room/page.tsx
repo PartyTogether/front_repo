@@ -6,6 +6,8 @@ import RoomHero from "@/app/room/components/RoomHero";
 import Rooms from "@/app/room/components/Rooms";
 import RoomInfo from "@/app/room/components/RoomInfo";
 import { cn } from "@/lib/utils";
+import ViewMode from "@/app/room/components/ViewMode";
+import MyRoom from "@/app/room/components/MyRoom";
 
 interface users {
     id: number;
@@ -48,9 +50,11 @@ export default function RoomPage() {
     const [selectedRoom, setSelectedRoom] = useState<selectedRoom | null>(null);
     const [roomList, setRoomList] = useState<Room[] | null>(null);
 
+    const [viewMode, setViewMode] = useState("OTHER");
+
     const style = {
         roomPageDiv: "min-h-screen bg-white",
-        roomSection: "max-w-6xl mx-auto transition-all duration-500 mt-6 gap-6 px-6",
+        roomSection: "max-w-6xl mx-auto transition-all duration-500 mt-10 gap-6 px-6",
         isRoomSectionSelectedRoomTrue: "flex flex-col lg:flex-row items-start ",
         isRoomSectionSelectedRoomFalse: "flex flex-col items-center",
         roomInfoDiv: "lg:w-3/6 animate-slide-in-left ",
@@ -261,11 +265,19 @@ export default function RoomPage() {
                 )}
 
                 <div className={cn(selectedRoom ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse)}>
-                    <Rooms
-                        roomList={roomList}
-                        handleRoomSelect={handleRoomSelect}
-                        selectedRoom={selectedRoom}
+                    <ViewMode
+                        viewMode={viewMode}
+                        setViewMode={setViewMode}
                     />
+                    {viewMode === "OTHER" ? (
+                        <Rooms
+                            roomList={roomList}
+                            handleRoomSelect={handleRoomSelect}
+                            selectedRoom={selectedRoom}
+                        />
+                    ) : (
+                        <MyRoom />
+                    )}
                 </div>
             </div>
         </div>
