@@ -49,8 +49,10 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const loaderRef = useRef(null);
+    const [viewMode, setViewMode] = useState("OTHER");
 
     const style = {
+        selectedRoomInfoNavBtn: "",
         // 검색 박스
         searchDiv:"relative items-center mb-6",
         searchBar:
@@ -105,7 +107,6 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
 
     return (
         <section>
-            {/* 검색 바 */}
             <div className={style.searchDiv}>
                 <input
                     type="text"
@@ -133,7 +134,7 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                         {/* 왼쪽 */}
                         <div className={style.roomDivLeft}>
                             <div className={cn(tw.hashTagStyle, style.continentTag)}>
-                                <TiStar className="text-yellow-600" />
+                                <TiStar className="text-yellow-600"/>
                                 {room.continent}
                             </div>
                             <h3 className={style.roomDivLeftTitle}>
@@ -169,7 +170,7 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                         </div>
                     </div>
                 ))}
-                <div ref={loaderRef} className="h-12" />
+                <div ref={loaderRef} className="h-12"/>
             </div>
         </section>
     );
