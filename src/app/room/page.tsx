@@ -8,6 +8,7 @@ import RoomInfo from "@/app/room/components/RoomInfo";
 import { cn } from "@/lib/utils";
 import ViewMode from "@/app/room/components/ViewMode";
 import MyRoom from "@/app/room/components/MyRoom";
+import { fetchContinents } from '@/lib/api/continents';
 
 interface users {
     id: number;
@@ -42,6 +43,12 @@ interface Room {
     minimumPlayTime: number;
 }
 
+interface Continent {
+    continent: string;
+    continentImage: string;
+    huntingGrounds: string[];
+}
+
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [selectedContinent, setSelectedContinent] = useState("");
@@ -49,6 +56,7 @@ export default function RoomPage() {
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<selectedRoom | null>(null);
     const [roomList, setRoomList] = useState<Room[] | null>(null);
+    const [continents, setContinents] = useState<Continent[]>([]);
 
     const [viewMode, setViewMode] = useState("OTHER");
 
@@ -183,25 +191,21 @@ export default function RoomPage() {
         },
     ];
 
-    const continents = [
-        {
-            name: "리프레",
-            grounds: ["망가진 용의 둥지", "위험한 용의 둥지", "남겨진 용의 둥지", "붉은 켄타우르스의 영역", "검은 켄타우르스의 영역", "불과 어둠의 전장"
-            , "블루 와이번의 둥지", "다크 와이번의 둥지"],
-        },
-        {
-            name: "엘나스",
-            grounds: ["차가운 벌판2",],
-        },
-        {
-            name: "아쿠아리움",
-            grounds: ["위험한 바다 협곡", "깊은 바다 협곡"],
-        },
-        {
-            name: "루디브리엄",
-            grounds: ["시간의길4", "시간의길1","마스터 데스 테니"],
-        }
-    ];
+    /**
+     *  초기 요청 (대륙 정보)
+     */
+    useEffect(() => {
+        const loadContinents = async () => {
+            try {
+                const data =  await fetchContinents();
+                setContinents(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        void loadContinents();
+    }, []);
+
 
     useEffect(() => {
         console.log("선택된 대륙: ",selectedContinent);
