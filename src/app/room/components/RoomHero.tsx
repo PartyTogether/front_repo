@@ -5,8 +5,9 @@ import { cn } from "@/lib/utils";
 import { FaImage } from 'react-icons/fa';
 
 interface Continent {
-    name: string;
-    grounds: string[];
+    continent: string;
+    continentImage: string;
+    huntingGrounds: string[];
 }
 
 interface RoomHeroProps {
@@ -43,26 +44,26 @@ export default function RoomHero({
             <div className={style.continentsDiv}>
                 {continents.map((cont) => (
                     <button
-                        key={cont.name}
+                        key={cont.continent}
                         onClick={() => {
-                            setSelectedContinent(cont.name);
+                            setSelectedContinent(cont.continent);
                             setSelectedHuntingGround("");
                         }}
                         className={cn(
-                            tw.buttonStyle,style.contBtn, selectedContinent === cont.name
+                            tw.buttonStyle,style.contBtn, selectedContinent === cont.continent
                             && style.selectedContBtn
                         )}
                     >
                         <FaImage/>
-                        {cont.name}
+                        {cont.continent}
                     </button>
                 ))}
             </div>
 
             <div className={style.groundsDiv}>
                 {continents
-                    .find((c) => c.name === selectedContinent)
-                    ?.grounds.map((ground) => (
+                    .find((c) => c.continent === selectedContinent)
+                    ?.huntingGrounds.map((ground) => (
                         <button
                             key={ground}
                             onClick={() => setSelectedHuntingGround(ground)}
