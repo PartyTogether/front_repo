@@ -8,46 +8,11 @@ import RoomInfo from "@/app/room/components/RoomInfo";
 import { cn } from "@/lib/utils";
 import ViewMode from "@/app/room/components/ViewMode";
 import MyRoom from "@/app/room/components/MyRoom";
-import { fetchContinents } from '@/lib/api/continents';
+import { fetchRoomPageData } from '@/lib/api/rooms';
+import RoomCreate from "@/app/room/components/RoomCreate";
+import {Continent, users, selectedRoom, Room} from "@/app/room/RoomTypes";
 
-interface users {
-    id: number;
-    name: string;
-    level: number;
-    class: string;
-}
 
-interface selectedRoom {
-    id: number;
-    title: string;
-    desc: string;
-    users: users[];
-    host: string;
-    currentHead: number;
-    maximumHead: number;
-    isFull: boolean;
-}
-
-interface Room {
-    id: number;
-    title: string;
-    desc: string;
-    continent: string;
-    huntingGround: string;
-    host: string;
-    isFull: boolean;
-    currentHead: number;
-    maximumHead: number;
-    channel: string;
-    minimumLv: number;
-    minimumPlayTime: number;
-}
-
-interface Continent {
-    continent: string;
-    continentImage: string;
-    huntingGrounds: string[];
-}
 
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -58,7 +23,10 @@ export default function RoomPage() {
     const [roomList, setRoomList] = useState<Room[] | null>(null);
     const [continents, setContinents] = useState<Continent[]>([]);
 
-    const [viewMode, setViewMode] = useState("OTHER");
+    const [viewMode, setViewMode] = useState("OTHER_PARTY");
+
+    const isLoggedIn = true;
+    const hasRoom = false;
 
     const style = {
         roomPageDiv: "min-h-screen bg-white",
@@ -68,6 +36,7 @@ export default function RoomPage() {
         roomInfoDiv: "lg:w-3/6 animate-slide-in-left ",
         isRoomsSelectedRoomTrue: "lg:w-3/6 animate-slide-in-left",
         isRoomsSelectedRoomFalse: "w-full max-w-3xl",
+        items_center:"flex flex-col items-center"
     }
 
     const testUsers: users[] = [
@@ -139,8 +108,8 @@ export default function RoomPage() {
     const testSelectedRoom: selectedRoom[] = [
         {
             id: 1,
-            title: "망용둥 좌1 우1 구합니다",
-            desc: "끈기있게 하실분만 !!!",
+            title: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다",
+            desc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 ",
             users: testUsers2,
             host: "풍선",
             currentHead: 6,
@@ -163,8 +132,8 @@ export default function RoomPage() {
     const testRooms = [
         {
             id: 1,
-            title: "망용둥 좌1 우1 구합니다",
-            desc: "끈기있게 하실분만 !!!",
+            title: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다",
+            desc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 !!!",
             continent: "리프레",
             huntingGround: "망가진 용의 둥지",
             host: "풍선",
@@ -192,18 +161,18 @@ export default function RoomPage() {
     ];
 
     /**
-     *  초기 요청 (대륙 정보)
+     *  초기 요청 (대륙, 사냥터, 포지션 정보)
      */
     useEffect(() => {
-        const loadContinents = async () => {
+        const loadRoomPageData = async () => {
             try {
-                const data =  await fetchContinents();
+                const data = await fetchRoomPageData();
                 setContinents(data);
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching room page data:", error);
             }
         };
-        void loadContinents();
+        void loadRoomPageData();
     }, []);
 
 
@@ -268,17 +237,26 @@ export default function RoomPage() {
                     </div>
                 )}
 
-                <div className={cn(selectedRoom ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse)}>
+                <div className={cn(selectedRoom ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse,
+                    viewMode === "MAKE_PARTY" && style.items_center)}>
                     <ViewMode
                         viewMode={viewMode}
                         setViewMode={setViewMode}
                     />
-                    {viewMode === "OTHER" ? (
+                    {viewMode === "OTHER_PARTY" ? (
                         <Rooms
                             roomList={roomList}
                             handleRoomSelect={handleRoomSelect}
                             selectedRoom={selectedRoom}
                         />
+                    ) : viewMode === "MAKE_PARTY" ? (
+                        isLoggedIn && !hasRoom ? (
+                            <RoomCreate continents={continents} />
+                        ) : (
+                            <div className="text-center py-10">
+                                <p>{!isLoggedIn ? "로그인이 필요합니다." : "이미 참여중인 방이 있습니다."}</p>
+                            </div>
+                        )
                     ) : (
                         <MyRoom />
                     )}

@@ -3,12 +3,7 @@
 import { tw } from '@/styles/common';
 import { cn } from "@/lib/utils";
 import { FaImage } from 'react-icons/fa';
-
-interface Continent {
-    continent: string;
-    continentImage: string;
-    huntingGrounds: string[];
-}
+import { Continent } from '@/app/room/RoomTypes';
 
 interface RoomHeroProps {
     continents: Continent[];
@@ -44,35 +39,35 @@ export default function RoomHero({
             <div className={style.continentsDiv}>
                 {continents.map((cont) => (
                     <button
-                        key={cont.continent}
+                        key={cont.continentName}
                         onClick={() => {
-                            setSelectedContinent(cont.continent);
+                            setSelectedContinent(cont.continentName);
                             setSelectedHuntingGround("");
                         }}
                         className={cn(
-                            tw.buttonStyle,style.contBtn, selectedContinent === cont.continent
+                            tw.buttonStyle,style.contBtn, selectedContinent === cont.continentName
                             && style.selectedContBtn
                         )}
                     >
                         <FaImage/>
-                        {cont.continent}
+                        {cont.continentName}
                     </button>
                 ))}
             </div>
 
             <div className={style.groundsDiv}>
                 {continents
-                    .find((c) => c.continent === selectedContinent)
+                    .find((c) => c.continentName === selectedContinent)
                     ?.huntingGrounds.map((ground) => (
                         <button
-                            key={ground}
-                            onClick={() => setSelectedHuntingGround(ground)}
+                            key={ground.huntingGroundName}
+                            onClick={() => setSelectedHuntingGround(ground.huntingGroundName)}
                             className={cn(
-                                tw.buttonStyle, style.groundBtn, selectedHuntingGround === ground
+                                tw.buttonStyle, style.groundBtn, selectedHuntingGround === ground.huntingGroundName
                                 && style.selectedGroundBtn
                             )}
                         >
-                            {ground}
+                            {ground.huntingGroundName}
                         </button>
                     ))}
             </div>
