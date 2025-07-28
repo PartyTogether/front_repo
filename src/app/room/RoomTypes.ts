@@ -50,4 +50,6 @@ export interface createRoomReq {
     roomMinTime: string,
     roomChannel: string,
     roomHuntingGround: string,
+    roomPositions: string[],
+    roomPositionComments: Record<string, string>,
 }
