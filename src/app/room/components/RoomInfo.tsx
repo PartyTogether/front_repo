@@ -4,24 +4,8 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { tw } from "@/styles/common";
 import Image from "next/image";
+import { users, selectedRoom } from '@/app/room/RoomTypes';
 
-interface users {
-    id: number;
-    name: string;
-    level: number;
-    class: string;
-}
-
-interface selectedRoom {
-    id: number;
-    title: string;
-    desc: string;
-    users: users[];
-    host: string;
-    currentHead: number;
-    maximumHead: number;
-    isFull: boolean;
-}
 
 interface RoomInfoProps {
     room: selectedRoom;
@@ -40,7 +24,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
         isClosingFalseAnimate: "animate-slide-in-left",
         closeBtn: "absolute top-3 right-3 text-gray-400 hover:text-gray-700 focus:outline-none",
         titleDiv: "flex border-b items-center justify-between border-gray-300 mb-5",
-        title: "text-xl font-bold",
+        title: "text-xl font-bold w-100",
         headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500",
         hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-300",
         partnerListDiv: "grid grid-cols-1 gap-2",

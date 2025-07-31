@@ -13,21 +13,29 @@ export default function( {viewMode, setViewMode}:ViewModeProps){
 
     return(
         <div className={style.roomInfoNavDiv}>
-            <button className={cn(style.roomInfoNavBtn, viewMode === "MY"
+            <button className={cn(style.roomInfoNavBtn, viewMode === "MY_PARTY"
                 && tw.selectedBtn)}
                     onClick={() => {
-                        setViewMode("MY");
+                        setViewMode("MY_PARTY");
                     }}
             >
                 내 파티 보기
             </button>
-            <button className={cn(style.roomInfoNavBtn, viewMode === "OTHER"
+            <button className={cn(style.roomInfoNavBtn, viewMode === "OTHER_PARTY"
                 && tw.selectedBtn)}
                     onClick={() => {
-                        setViewMode("OTHER");
+                        setViewMode("OTHER_PARTY");
                     }}
             >
                 다른 파티 보기
+            </button>
+            <button className={cn(style.roomInfoNavBtn, viewMode === "MAKE_PARTY"
+                && tw.selectedBtn)}
+                    onClick={() => {
+                        setViewMode("MAKE_PARTY");
+                    }}
+            >
+                파티 만들기
             </button>
         </div>
     );
