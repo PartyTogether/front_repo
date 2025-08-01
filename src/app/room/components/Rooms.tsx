@@ -70,7 +70,7 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
             roomDivRight: "flex flex-col justify-between items-end",
             roomDivRightDesc: "mt-1 text-xs font-normal text-gray-400",
             roomDivRightInfo: "flex items-center gap-2 text-gray-700 text-xl font-semibold px-3 py-1 rounded-full",
-            acceptBtn: "w-30 mt-14",
+            acceptBtn: "mt-14",
     };
 
     // 무한 스크롤 감지기
