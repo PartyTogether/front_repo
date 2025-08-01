@@ -1,7 +1,7 @@
 "use client";
 
 import { createRoomReq, Continent } from '../RoomTypes';
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createRoom } from "@/lib/api/rooms";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,20 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
     const [roomChannel, setRoomChannel] = useState("");
     const [roomContinent, setRoomContinent] = useState("리프레")
     const [roomHuntingGround, setRoomHuntingGround] = useState("");
+    const [hostPosition, setHostPosition] = useState("");
     const [positionOptions, setPositionOptions] = useState<Record<string, PositionOption>>({});
+
+    useEffect(() => {
+        if (hostPosition) {
+            handlePositionOptionChange(hostPosition, 'isRecruiting', false);
+        }
+
+        return () => {
+            if (hostPosition) {
+                handlePositionOptionChange(hostPosition, 'isRecruiting', true);
+            }
+        }
+    }, [hostPosition]);
 
     const formatPosition = (position: string) => {
         if (position === "서폿") return "서포터";
@@ -81,6 +94,7 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
 
     const handleHuntingGroundClick = (groundName: string) => {
         setRoomHuntingGround(groundName);
+        setHostPosition("");
         setPositionOptions({});
     };
 
@@ -151,6 +165,7 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
             roomHuntingGround,
             roomPositions: selectedPositions,
             roomPositionComments,
+            hostPosition,
         };
         console.log(roomData);
         try{
@@ -182,6 +197,7 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
                         checked={!isRecruiting}
                         onChange={(e) => handlePositionOptionChange(pos, 'isRecruiting', !e.target.checked)}
                         className="form-checkbox h-4 w-4 text-indigo-600 rounded-sm transition duration-150 ease-in-out focus:ring-indigo-500"
+                        disabled={pos === hostPosition}
                     />
                     <label htmlFor={`recruit-${pos}`} className="ml-2">모집 안 함</label>
                 </div>
@@ -257,6 +273,32 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
                                     </div>
                                 ))}
                         </div>
+                    </div>
+                )}
+
+                {roomHuntingGround && (
+                    <div>
+                        <label className={style.label}>내 포지션</label>
+                        <select
+                            value={hostPosition}
+                            onChange={(e) => setHostPosition(e.target.value)}
+                            className={style.select}
+                        >
+                            <option value="">포지션 선택</option>
+                            {Object.keys(parsedPositions.floors).map(floor => (
+                                <optgroup label={`${floor}층`}>
+                                    {parsedPositions.floors[floor].full.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
+                                    {parsedPositions.floors[floor].left.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
+                                    {parsedPositions.floors[floor].center.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
+                                    {parsedPositions.floors[floor].right.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
+                                </optgroup>
+                            ))}
+                            {parsedPositions.support.length > 0 && (
+                                <optgroup label="서포터">
+                                    {parsedPositions.support.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
+                                </optgroup>
+                            )}
+                        </select>
                     </div>
                 )}
 
