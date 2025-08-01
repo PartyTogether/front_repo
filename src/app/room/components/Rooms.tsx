@@ -53,18 +53,13 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
 
     const style = {
         selectedRoomInfoNavBtn: "",
-        // 검색 박스
         searchDiv:"relative items-center mb-6",
         searchBar:
             "w-full px-5 py-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition",
         searchBtn:
             "absolute right-1 top-1 bottom-1 px-4 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition",
-        // 검색 박스
-
-        // 방 리스트 박스
         roomListDiv: "divide-y divide-gray-200 border-t border-gray-300",
         roomDiv: "flex justify-between items-start px-4 py-3 bg-white hover:bg-gray-50 transition-all duration-300 cursor-pointer",
-            // 방 왼쪽 스타일
             roomDivLeft: "flex flex-col space-y-2 py-4",
             roomDivLeftTitle: "text-base font-bold text-gray-800",
             roomDivLeftHost: "text-base font-medium text-gray-500",
@@ -72,12 +67,10 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
             hashTag1: "flex bg-[#98c1f8] text-white",
             hashTag2: "flex bg-[#8f7389] text-white",
             hashTag3: "flex bg-[#319864] text-white",
-            // 방 오른쪽 스타일
-            roomDivRight: "text-right items-center ",
+            roomDivRight: "flex flex-col justify-between items-end",
             roomDivRightDesc: "mt-1 text-xs font-normal text-gray-400",
             roomDivRightInfo: "flex items-center gap-2 text-gray-700 text-xl font-semibold px-3 py-1 rounded-full",
-            acceptBtn: "mt-13",
-        // 방 리스트 박스
+            acceptBtn: "w-30 mt-14",
     };
 
     // 무한 스크롤 감지기
