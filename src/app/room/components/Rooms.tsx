@@ -5,42 +5,10 @@ import { cn } from "@/lib/utils";
 import { TiStar } from "react-icons/ti";
 import Image from "next/image";
 import { tw } from "@/styles/common";
-
-interface users {
-    id: number;
-    name: string;
-    level: number;
-    class: string;
-}
-
-interface selectedRoom {
-    id: number;
-    title: string;
-    desc: string;
-    users: users[];
-    host: string;
-    currentHead: number;
-    maximumHead: number;
-    isFull: boolean;
-}
-
-type RoomType = {
-    id: number;
-    title: string;
-    desc: string;
-    continent: string;
-    huntingGround: string;
-    host: string;
-    isFull: boolean;
-    currentHead: number;
-    maximumHead: number;
-    channel: string;
-    minimumLv: number;
-    minimumPlayTime: number;
-};
+import { users, selectedRoom, Room} from '@/app/room/RoomTypes';
 
 interface RoomsProps {
-    roomList: RoomType[] | null;
+    roomList: Room[] | null;
     handleRoomSelect: (id: number) => void;
     selectedRoom: selectedRoom | null;
 }
