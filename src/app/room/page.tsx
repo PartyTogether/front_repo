@@ -10,7 +10,7 @@ import ViewMode from "@/app/room/components/ViewMode";
 import MyRoom from "@/app/room/components/MyRoom";
 import { fetchRoomPageData } from '@/lib/api/rooms';
 import RoomCreate from "@/app/room/components/RoomCreate";
-import {Continent, members, selectedRoom, Room} from "@/app/room/RoomTypes";
+import {Continent, member, selectedRoom, Room} from "@/app/room/RoomTypes";
 
 
 
@@ -39,7 +39,7 @@ export default function RoomPage() {
         items_center:"flex flex-col items-center"
     }
 
-    const testUsers: members[] = [
+    const testUsers: member[] = [
         {
             memberId:1,
             memberName: "불의를못참음",
@@ -66,7 +66,7 @@ export default function RoomPage() {
         }
     ]
 
-    const testUsers2: members[] = [
+    const testUsers2: member[] = [
         {
             memberId:5,
             memberName: "메롱도적",

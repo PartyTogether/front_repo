@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { TiStar } from "react-icons/ti";
 import Image from "next/image";
 import { tw } from "@/styles/common";
-import { members, selectedRoom, Room} from '@/app/room/RoomTypes';
+import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
 
 interface RoomsProps {
     roomList: Room[] | null;

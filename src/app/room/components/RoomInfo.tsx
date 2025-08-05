@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { tw } from "@/styles/common";
 import Image from "next/image";
-import { members, selectedRoom } from '@/app/room/RoomTypes';
+import { member, selectedRoom } from '@/app/room/RoomTypes';
 
 
 interface RoomInfoProps {

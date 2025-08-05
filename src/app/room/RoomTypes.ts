@@ -9,7 +9,7 @@ export interface Continent {
     huntingGrounds: HuntingGround[];
 }
 
-export interface members {
+export interface member {
     memberId: number;
     memberName: string;
     memberLevel: number;
@@ -20,11 +20,18 @@ export interface selectedRoom {
     roomId: number;
     roomTitle: string;
     roomDesc: string;
-    roomMembers: members[];
+    roomMembers: member[];
     roomHost: string;
     roomCurrentMembers: number;
     roomMaxMembers: number;
     roomIsFull: boolean;
+}
+
+export interface roomPosition{
+    positionName: string;
+    positionStatus: string;
+    positionComment: string;
+    member: member | null;
 }
 
 export interface Room {
