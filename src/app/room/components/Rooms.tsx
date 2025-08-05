@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { TiStar } from "react-icons/ti";
 import Image from "next/image";
 import { tw } from "@/styles/common";
-import { users, selectedRoom, Room} from '@/app/room/RoomTypes';
+import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
 
 interface RoomsProps {
     roomList: Room[] | null;
@@ -28,23 +28,22 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
         searchBtn:
             "absolute right-1 top-1 bottom-1 px-4 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition",
         // 검색 박스
-
         // 방 리스트 박스
         roomListDiv: "divide-y divide-gray-200 border-t border-gray-300",
         roomDiv: "flex justify-between items-start px-4 py-3 bg-white hover:bg-gray-50 transition-all duration-300 cursor-pointer",
-            // 방 왼쪽 스타일
-            roomDivLeft: "flex flex-col space-y-2 py-4",
-            roomDivLeftTitle: "text-base font-bold text-gray-800",
-            roomDivLeftHost: "text-base font-medium text-gray-500",
-            continentTag: "flex gap-1 w-[80px] bg-yellow-100 text-gray-500",
-            hashTag1: "flex bg-[#98c1f8] text-white",
-            hashTag2: "flex bg-[#8f7389] text-white",
-            hashTag3: "flex bg-[#319864] text-white",
-            // 방 오른쪽 스타일
-            roomDivRight: "text-right items-center ",
-            roomDivRightDesc: "mt-1 text-xs font-normal text-gray-400",
-            roomDivRightInfo: "flex items-center gap-2 text-gray-700 text-xl font-semibold px-3 py-1 rounded-full",
-            acceptBtn: "mt-13",
+        // 방 왼쪽 스타일
+        roomDivLeft: "flex flex-col space-y-2 py-4",
+        roomDivLeftTitle: "text-base font-bold text-gray-800",
+        roomDivLeftHost: "text-base font-medium text-gray-500",
+        continentTag: "flex gap-1 w-[80px] bg-yellow-100 text-gray-500",
+        hashTag1: "flex bg-[#98c1f8] text-white",
+        hashTag2: "flex bg-[#8f7389] text-white",
+        hashTag3: "flex bg-[#319864] text-white",
+        // 방 오른쪽 스타일
+        roomDivRight: "text-right items-center ",
+        roomDivRightDesc: "mt-1 text-xs font-normal text-gray-400",
+        roomDivRightInfo: "flex items-center gap-2 text-gray-700 text-xl font-semibold px-3 py-1 rounded-full",
+        acceptBtn: "mt-13",
         // 방 리스트 박스
     };
 
@@ -92,32 +91,32 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
             <div className={style.roomListDiv}>
                 {roomList?.map((room) => (
                     <div
-                        key={room.id}
-                        onClick={() => handleRoomSelect(room.id)}
+                        key={room.roomId}
+                        onClick={() => handleRoomSelect(room.roomId)}
                         className={cn(
                             style.roomDiv,
-                            selectedRoom?.id === room.id && "translate-x-2 shadow-md"
+                            selectedRoom?.roomId === room.roomId && "translate-x-2 shadow-md"
                         )}
                     >
                         {/* 왼쪽 */}
                         <div className={style.roomDivLeft}>
                             <div className={cn(tw.hashTagStyle, style.continentTag)}>
                                 <TiStar className="text-yellow-600"/>
-                                {room.continent}
+                                {room.roomContinent}
                             </div>
                             <h3 className={style.roomDivLeftTitle}>
-                                {room.title}
+                                {room.roomTitle}
                             </h3>
-                            <p className={style.roomDivLeftHost}>방장: {room.host}</p>
+                            <p className={style.roomDivLeftHost}>방장: {room.roomHost}</p>
                             <div className="flex gap-2">
                                 <div className={cn(tw.hashTagStyle, style.hashTag1)}>
-                                    {room.minimumLv}Lv 이상
+                                    {room.roomMinLevel}Lv 이상
                                 </div>
                                 <div className={cn(tw.hashTagStyle, style.hashTag2)}>
-                                    {room.minimumPlayTime}시간 이상
+                                    {room.roomMinTime}시간 이상
                                 </div>
                                 <div className={cn(tw.hashTagStyle, style.hashTag3)}>
-                                    채널 {room.channel}
+                                    채널 {room.roomChannel}
                                 </div>
                             </div>
                         </div>
@@ -131,9 +130,9 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                                     width={30}
                                     height={20}
                                 />
-                                {room.currentHead} / {room.maximumHead}
+                                {room.roomCurrentMembers} / {room.roomMaxMembers}
                             </div>
-                            <p className={style.roomDivRightDesc}>{room.desc}</p>
+                            <p className={style.roomDivRightDesc}>{room.roomDesc}</p>
                             <div className={cn(tw.acceptBtn, style.acceptBtn)}>가입신청</div>
                         </div>
                     </div>

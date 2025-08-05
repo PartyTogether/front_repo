@@ -9,37 +9,44 @@ export interface Continent {
     huntingGrounds: HuntingGround[];
 }
 
-export interface users {
-    id: number;
-    name: string;
-    level: number;
-    class: string;
+export interface member {
+    memberId: number;
+    memberName: string;
+    memberLevel: number;
+    memberClass: string;
 }
 
 export interface selectedRoom {
-    id: number;
-    title: string;
-    desc: string;
-    users: users[];
-    host: string;
-    currentHead: number;
-    maximumHead: number;
-    isFull: boolean;
+    roomId: number;
+    roomTitle: string;
+    roomDesc: string;
+    roomMembers: member[];
+    roomHost: string;
+    roomCurrentMembers: number;
+    roomMaxMembers: number;
+    roomIsFull: boolean;
+}
+
+export interface roomPosition{
+    positionName: string;
+    positionStatus: string;
+    positionComment: string;
+    member: member | null;
 }
 
 export interface Room {
-    id: number;
-    title: string;
-    desc: string;
-    continent: string;
-    huntingGround: string;
-    host: string;
-    isFull: boolean;
-    currentHead: number;
-    maximumHead: number;
-    channel: string;
-    minimumLv: number;
-    minimumPlayTime: number;
+    roomId: number;
+    roomTitle: string;
+    roomDesc: string;
+    roomContinent: string;
+    roomHuntingGround: string;
+    roomHost: string;
+    roomIsFull: boolean;
+    roomCurrentMembers: number;
+    roomMaxMembers: number;
+    roomChannel: string;
+    roomMinLevel: number;
+    roomMinTime: number;
 }
 
 export interface createRoomReq {
