@@ -59,4 +59,5 @@ export interface createRoomReq {
     roomHuntingGround: string,
     roomPositions: string[],
     roomPositionComments: Record<string, string>,
+    hostPosition: string,
 }
