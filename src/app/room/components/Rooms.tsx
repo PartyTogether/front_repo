@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { TiStar } from "react-icons/ti";
 import Image from "next/image";
 import { tw } from "@/styles/common";
-import { users, selectedRoom, Room} from '@/app/room/RoomTypes';
+import { members, selectedRoom, Room} from '@/app/room/RoomTypes';
 
 interface RoomsProps {
     roomList: Room[] | null;
@@ -91,32 +91,32 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
             <div className={style.roomListDiv}>
                 {roomList?.map((room) => (
                     <div
-                        key={room.id}
-                        onClick={() => handleRoomSelect(room.id)}
+                        key={room.roomId}
+                        onClick={() => handleRoomSelect(room.roomId)}
                         className={cn(
                             style.roomDiv,
-                            selectedRoom?.id === room.id && "translate-x-2 shadow-md"
+                            selectedRoom?.roomId === room.roomId && "translate-x-2 shadow-md"
                         )}
                     >
                         {/* 왼쪽 */}
                         <div className={style.roomDivLeft}>
                             <div className={cn(tw.hashTagStyle, style.continentTag)}>
                                 <TiStar className="text-yellow-600"/>
-                                {room.continent}
+                                {room.roomContinent}
                             </div>
                             <h3 className={style.roomDivLeftTitle}>
-                                {room.title}
+                                {room.roomTitle}
                             </h3>
-                            <p className={style.roomDivLeftHost}>방장: {room.host}</p>
+                            <p className={style.roomDivLeftHost}>방장: {room.roomHost}</p>
                             <div className="flex gap-2">
                                 <div className={cn(tw.hashTagStyle, style.hashTag1)}>
-                                    {room.minimumLv}Lv 이상
+                                    {room.roomMinLevel}Lv 이상
                                 </div>
                                 <div className={cn(tw.hashTagStyle, style.hashTag2)}>
-                                    {room.minimumPlayTime}시간 이상
+                                    {room.roomMinTime}시간 이상
                                 </div>
                                 <div className={cn(tw.hashTagStyle, style.hashTag3)}>
-                                    채널 {room.channel}
+                                    채널 {room.roomChannel}
                                 </div>
                             </div>
                         </div>
@@ -130,9 +130,9 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                                     width={30}
                                     height={20}
                                 />
-                                {room.currentHead} / {room.maximumHead}
+                                {room.roomCurrentMembers} / {room.roomMaxMembers}
                             </div>
-                            <p className={style.roomDivRightDesc}>{room.desc}</p>
+                            <p className={style.roomDivRightDesc}>{room.roomDesc}</p>
                             <div className={cn(tw.acceptBtn, style.acceptBtn)}>가입신청</div>
                         </div>
                     </div>

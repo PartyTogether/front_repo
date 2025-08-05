@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { tw } from "@/styles/common";
 import Image from "next/image";
-import { users, selectedRoom } from '@/app/room/RoomTypes';
+import { members, selectedRoom } from '@/app/room/RoomTypes';
 
 
 interface RoomInfoProps {
@@ -13,8 +13,8 @@ interface RoomInfoProps {
 }
 
 export default function RoomInfo({ room, onClose }: RoomInfoProps) {
-    const hostUser = room.users.find((user) => user.name === room.host);
-    const otherUsers = room.users.filter((user) => user.name !== room.host);
+    const hostMember = room.roomMembers.find((member) => member.memberName === room.roomHost);
+    const otherMembers = room.roomMembers.filter((member) => member.memberName !== room.roomHost);
     const [isClosing, setIsClosing] = useState(false);
 
 
@@ -62,7 +62,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
             </button>
             <div className={style.titleDiv}>
                 <h2 className={style.title}>
-                    {room.title}
+                    {room.roomTitle}
                 </h2>
                 <div className={style.headCount}>
                     <Image
@@ -71,27 +71,27 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                         width={30}
                         height={20}
                     />
-                    {room.currentHead} / {room.maximumHead}
+                    {room.roomCurrentMembers} / {room.roomMaxMembers}
                 </div>
 
             </div>
 
 
-            {hostUser && (
+            {hostMember && (
                 <div
                     className={style.hostDiv}>
                     <FaCrown className="text-yellow-400" />
-                    {hostUser.level}Lv {hostUser.class} {hostUser.name}
+                    {hostMember.memberLevel}Lv {hostMember.memberClass} {hostMember.memberName}
                 </div>
             )}
 
             <div className={style.partnerListDiv}>
-                {otherUsers.map((user) => (
+                {otherMembers.map((member) => (
                     <div
-                        key={user.id}
+                        key={member.memberId}
                         className={style.partnerDiv}
                     >
-                        {user.level}Lv {user.class} {user.name}
+                        {member.memberLevel}Lv {member.memberClass} {member.memberName}
                     </div>
                 ))}
             </div>

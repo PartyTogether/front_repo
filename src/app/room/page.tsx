@@ -10,7 +10,7 @@ import ViewMode from "@/app/room/components/ViewMode";
 import MyRoom from "@/app/room/components/MyRoom";
 import { fetchRoomPageData } from '@/lib/api/rooms';
 import RoomCreate from "@/app/room/components/RoomCreate";
-import {Continent, users, selectedRoom, Room} from "@/app/room/RoomTypes";
+import {Continent, members, selectedRoom, Room} from "@/app/room/RoomTypes";
 
 
 
@@ -39,124 +39,124 @@ export default function RoomPage() {
         items_center:"flex flex-col items-center"
     }
 
-    const testUsers: users[] = [
+    const testUsers: members[] = [
         {
-            id:1,
-            name: "불의를못참음",
-            level: 152,
-            class: "나이트로드"
+            memberId:1,
+            memberName: "불의를못참음",
+            memberLevel: 152,
+            memberClass: "나이트로드"
         },
         {
-            id:2,
-            name: "심줄까",
-            level: 110,
-            class: "비숍"
+            memberId:2,
+            memberName: "심줄까",
+            memberLevel: 110,
+            memberClass: "비숍"
         },
         {
-            id:3,
-            name: "대머리도적",
-            level: 162,
-            class: "나이트로드"
+            memberId:3,
+            memberName: "대머리도적",
+            memberLevel: 162,
+            memberClass: "나이트로드"
         },
         {
-            id:4,
-            name: "황족나이트",
-            level: 172,
-            class: "나이트"
+            memberId:4,
+            memberName: "황족나이트",
+            memberLevel: 172,
+            memberClass: "나이트"
         }
     ]
 
-    const testUsers2: users[] = [
+    const testUsers2: members[] = [
         {
-            id:5,
-            name: "메롱도적",
-            level: 166,
-            class: "나이트로드"
+            memberId:5,
+            memberName: "메롱도적",
+            memberLevel: 166,
+            memberClass: "나이트로드"
         },
         {
-            id:6,
-            name: "최강비숍",
-            level: 105,
-            class: "클레릭"
+            memberId:6,
+            memberName: "최강비숍",
+            memberLevel: 105,
+            memberClass: "클레릭"
         },
         {
-            id:7,
-            name: "풍선",
-            level: 156,
-            class: "나이트로드"
+            memberId:7,
+            memberName: "풍선",
+            memberLevel: 156,
+            memberClass: "나이트로드"
         },
         {
-            id:8,
-            name: "S2닼나",
-            level: 172,
-            class: "다크나이트"
+            memberId:8,
+            memberName: "S2닼나",
+            memberLevel: 172,
+            memberClass: "다크나이트"
         },
         {
-            id:9,
-            name: "샾싸게",
-            level: 140,
-            class: "사수"
+            memberId:9,
+            memberName: "샾싸게",
+            memberLevel: 140,
+            memberClass: "사수"
         },
         {
-            id:10,
-            name: "띱자리히어로",
-            level: 110,
-            class: "크루세이더"
+            memberId:10,
+            memberName: "띱자리히어로",
+            memberLevel: 110,
+            memberClass: "크루세이더"
         }
     ]
 
     const testSelectedRoom: selectedRoom[] = [
         {
-            id: 1,
-            title: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다",
-            desc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 ",
-            users: testUsers2,
-            host: "풍선",
-            currentHead: 6,
-            maximumHead: 6,
-            isFull: true
+            roomId: 1,
+            roomTitle: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다다",
+            roomDesc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 ",
+            roomMembers: testUsers2,
+            roomHost: "풍선",
+            roomCurrentMembers: 6,
+            roomMaxMembers: 6,
+            roomIsFull: true
         },
         {
-            id: 2,
-            title: "불어둠 좌1 우1 구합니다11111111111",
-            desc: "최강 격수보유중",
-            users: testUsers,
-            host: "불의를못참음",
-            currentHead: 4,
-            maximumHead: 6,
-            isFull: false
+            roomId: 2,
+            roomTitle: "불어둠 좌1 우1 구합니다11111111111",
+            roomDesc: "최강 격수보유중",
+            roomMembers: testUsers,
+            roomHost: "불의를못참음",
+            roomCurrentMembers: 4,
+            roomMaxMembers: 6,
+            roomIsFull: false
         },
 
     ]
 
     const testRooms = [
         {
-            id: 1,
-            title: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다",
-            desc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 !!!",
-            continent: "리프레",
-            huntingGround: "망가진 용의 둥지",
-            host: "풍선",
-            isFull: true,
-            currentHead: 6,
-            maximumHead: 6,
-            channel: "L-12",
-            minimumLv: 144,
-            minimumPlayTime: 2,
+            roomId: 1,
+            roomTitle: "망용둥 좌1 우1 구합니다다다다다다다다다다다다다다다다다다다다다다다다다",
+            roomDesc: "끈기있게 하실분만만만만만만만만만만만만만만만만만만만 !!!",
+            roomContinent: "리프레",
+            roomHuntingGround: "망가진 용의 둥지",
+            roomHost: "풍선",
+            roomIsFull: true,
+            roomCurrentMembers: 6,
+            roomMaxMembers: 6,
+            roomChannel: "L-12",
+            roomMinLevel: 144,
+            roomMinTime: 2,
         },
         {
-            id: 2,
-            title: "불어둠 좌1 우1 구합니다11111111111",
-            desc: "최강 격수보유중",
-            continent: "리프레",
-            huntingGround: "불과 어둠의 전장",
-            host: "불의를못참음",
-            isFull: false,
-            currentHead: 4,
-            maximumHead: 6,
-            channel: "L-113",
-            minimumLv: 90,
-            minimumPlayTime: 2,
+            roomId: 2,
+            roomTitle: "불어둠 좌1 우1 구합니다11111111111",
+            roomDesc: "최강 격수보유중",
+            roomContinent: "리프레",
+            roomHuntingGround: "불과 어둠의 전장",
+            roomHost: "불의를못참음",
+            roomIsFull: false,
+            roomCurrentMembers: 4,
+            roomMaxMembers: 6,
+            roomChannel: "L-113",
+            roomMinLevel: 90,
+            roomMinTime: 2,
         },
     ];
 
@@ -181,10 +181,10 @@ export default function RoomPage() {
         console.log("선택된 사냥터: ",selectedHuntingGround);
         if(selectedContinent){
             if(selectedHuntingGround){
-                const roomList = testRooms.filter((room) => room.huntingGround === selectedHuntingGround);
+                const roomList = testRooms.filter((room) => room.roomHuntingGround === selectedHuntingGround);
                 setRoomList(roomList);
             }else{
-                const roomList = testRooms.filter((room) => room.continent === selectedContinent);
+                const roomList = testRooms.filter((room) => room.roomContinent === selectedContinent);
                 setRoomList(roomList);
             }
         }
@@ -192,7 +192,7 @@ export default function RoomPage() {
 
     useEffect(() => {
         if(selectedRoomId !== null){
-            const room = testSelectedRoom.find((room) => room.id === selectedRoomId);
+            const room = testSelectedRoom.find((room) => room.roomId === selectedRoomId);
             if(room){
                 setSelectedRoom(room);
             }
