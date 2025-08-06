@@ -6,6 +6,12 @@ import { usePathname } from "next/navigation";
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const pathname = usePathname();
+
+    const loginHandler = () => {
+        // 외부 인증 서버로 리디렉트
+        window.location.href = 'http://localhost:5000/auth/discord'
+    }
+
     return (
         <header
             className="fixed top-0 left-0 w-full h-16 bg-white shadow-md flex items-center justify-between px-4 md:px-6 z-50">
@@ -20,7 +26,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             <div className="flex items-center gap-10">
                 <nav className="md:flex gap-4 text-gray-800 font-semibold ">
                     <Link
-                        href="/"
+                        href="http://localhost:3000"
                         className={`flex items-center gap-2 transform text-base transition duration-200 hover:scale-110
                                     px-4 py-2 rounded-full ${pathname === "/"
                                 ? "bg-[#5865F2] text-white shadow-lg"
@@ -44,7 +50,8 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                     </Link>
                 </nav>
                 <button
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#5865F2] hover:bg-[#4752c4] text-white font-semibold transition">
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#5865F2] hover:bg-[#4752c4] text-white font-semibold transition"
+                    onClick={loginHandler}>
                     <FaDiscord className="w-5 h-5"/>
                     로그인
                 </button>
