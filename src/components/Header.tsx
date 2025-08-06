@@ -26,7 +26,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             <div className="flex items-center gap-10">
                 <nav className="md:flex gap-4 text-gray-800 font-semibold ">
                     <Link
-                        href="http://localhost:3000"
+                        href="/"
                         className={`flex items-center gap-2 transform text-base transition duration-200 hover:scale-110
                                     px-4 py-2 rounded-full ${pathname === "/"
                                 ? "bg-[#5865F2] text-white shadow-lg"
@@ -56,8 +56,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                     로그인
                 </button>
             </div>
-
-
         </header>
     );
 }
