@@ -7,7 +7,8 @@ import useSWR from "swr";
  * @param data
  */
 export async function createRoom(data: createRoomReq) {
-    const res = await apiInstance.post('/room/create', data);
+    console.log(process.env.NEXT_PUBLIC_ROOM_CREATE," 방만들기 URL 요청");
+    const res = await apiInstance.post(process.env.NEXT_PUBLIC_ROOM_CREATE!, data);
     return res.data;
 }
 
@@ -16,7 +17,8 @@ export async function createRoom(data: createRoomReq) {
  *  /room 경로의 초기 메타 데이터 api
  */
 export async function fetchRoomPageData(): Promise<Continent[]> {
-    const res = await apiInstance.get('/room/meta');
+    console.log(process.env.NEXT_PUBLIC_ROOM_META," 방 메타 데이터 URL 요청");
+    const res = await apiInstance.get(process.env.NEXT_PUBLIC_ROOM_META!);
     return res.data;
 }
 
