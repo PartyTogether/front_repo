@@ -11,6 +11,7 @@ import MyRoom from '@/app/room/components/MyRoom';
 import { fetchRoomPageData, useGetRooms } from '@/lib/api/rooms';
 import RoomCreate from '@/app/room/components/RoomCreate';
 import { Continent, member, selectedRoom, Room } from '@/app/room/RoomTypes';
+import Swal from 'sweetalert2';
 
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -22,8 +23,8 @@ export default function RoomPage() {
     const [viewMode, setViewMode] = useState('OTHER_PARTY');
     const [roomList, setRoomList] = useState<Room[] | null>(null);
 
-    const isLoggedIn = true;
-    const hasRoom = false;
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [hasRoom, setHasRoom] = useState(true);
 
     const { rooms: fetchedRooms, isLoading, isError } = useGetRooms(selectedContinent, selectedHuntingGround);
 
@@ -38,8 +39,31 @@ export default function RoomPage() {
         items_center: 'flex flex-col items-center',
     };
 
-
-
+    const handleViewModeChange = (mode: string) => {
+        if (mode === 'MAKE_PARTY') {
+            if (!isLoggedIn) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '로그인 필요',
+                    text: '방을 만들려면 먼저 로그인해야 합니다.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: '확인'
+                });
+                return;
+            }
+            if (hasRoom) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '참여 중인 방 있음',
+                    text: '이미 참여중인 방이 있습니다. 새로운 방을 만들 수 없습니다.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: '확인'
+                });
+                return;
+            }
+        }
+        setViewMode(mode);
+    };
 
     useEffect(() => {
         const loadRoomPageData = async () => {
@@ -108,7 +132,7 @@ export default function RoomPage() {
                         viewMode === 'MAKE_PARTY' && style.items_center
                     )}
                 >
-                    <ViewMode viewMode={viewMode} setViewMode={setViewMode} />
+                    <ViewMode viewMode={viewMode} setViewMode={handleViewModeChange} />
                     {viewMode === 'OTHER_PARTY' ? (
                         <>
                             {isLoading && <p>Loading...</p>}
@@ -118,13 +142,7 @@ export default function RoomPage() {
                             )}
                         </>
                     ) : viewMode === 'MAKE_PARTY' ? (
-                        isLoggedIn && !hasRoom ? (
-                            <RoomCreate continents={continents} />
-                        ) : (
-                            <div className="text-center py-10">
-                                <p>{!isLoggedIn ? '로그인이 필요합니다.' : '이미 참여중인 방이 있습니다.'}</p>
-                            </div>
-                        )
+                        <RoomCreate continents={continents} setHasRoom={setHasRoom} />
                     ) : (
                         <MyRoom />
                     )}
