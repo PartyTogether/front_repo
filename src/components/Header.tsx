@@ -5,7 +5,6 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authMe, logout } from "@/lib/api/auth";
-import {onRefresh} from "next/dist/client/components/react-dev-overlay/pages/client";
 
 interface Member {
     id: string;
