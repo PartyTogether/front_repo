@@ -6,3 +6,8 @@ export async function authMe() {
     const res = await authInstance.get('/auth/me');
     return res.data;
 }
+
+export async function logout() {
+    console.log("로그아웃 요청 실행");
+    await authInstance.get("/auth/logout");
+}

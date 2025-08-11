@@ -5,7 +5,7 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import authInstance from "@/lib/api/authInstance";
-import {authMe} from "@/lib/api/auth";
+import {authMe, logout} from "@/lib/api/auth";
 
 interface Member {
     id: string;
@@ -55,7 +55,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const logoutHandler = async () => {
         try {
             // 서버에서 쿠키를 제거하고 응답을 반환
-            await authInstance.get("/auth/logout");
+            await logout();
             setMember(null);
             setIsLogin(false);
 
