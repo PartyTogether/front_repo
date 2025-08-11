@@ -46,3 +46,26 @@ export function useRoom(roomId: number | null) {
         isError: error,
     };
 }
+
+/**
+ * 방 목록 가져오기
+ * @param continent 선택된 대륙 (필수)
+ * @param huntingGround 선택된 사냥터 (선택)
+ */
+export function useGetRooms(continent: string, huntingGround: string | null) {
+    let url = process.env.NEXT_PUBLIC_ROOMS!;
+    if (continent) {
+        url += `?continent=${encodeURIComponent(continent)}`;
+        if (huntingGround) {
+            url += `&huntingGround=${encodeURIComponent(huntingGround)}`;
+        }
+    }
+
+    const { data, error, isLoading } = useSWR<Room[]>(url, fetcher);
+
+    return {
+        rooms: data,
+        isLoading,
+        isError: error,
+    };
+}

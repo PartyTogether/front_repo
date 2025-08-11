@@ -9,7 +9,7 @@ import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
 
 interface RoomsProps {
     roomList: Room[] | null;
-    handleRoomSelect: (id: number) => void;
+    handleRoomSelect: (id: string) => void;
     selectedRoom: selectedRoom | null;
 }
 
