@@ -17,7 +17,7 @@ export interface member {
 }
 
 export interface selectedRoom {
-    roomId: number;
+    roomId: string;
     roomTitle: string;
     roomDesc: string;
     roomMembers: member[];
@@ -35,18 +35,17 @@ export interface roomPosition{
 }
 
 export interface Room {
-    roomId: number;
+    roomId: string;
     roomTitle: string;
-    roomDesc: string;
+    roomDesc: string | null
     roomContinent: string;
     roomHuntingGround: string;
     roomHost: string;
-    roomIsFull: boolean;
     roomCurrentMembers: number;
     roomMaxMembers: number;
-    roomChannel: string;
+    roomChannel: string | null;
     roomMinLevel: number;
-    roomMinTime: number;
+    roomMinTime: string;
 }
 
 export interface createRoomReq {
