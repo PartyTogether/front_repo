@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import authInstance from "@/lib/api/authInstance";
+import {authMe} from "@/lib/api/auth";
 
 interface Member {
     id: string;
@@ -19,8 +20,8 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     useEffect(() => {
         const getMember = async () => {
             try {
-                const res = await authInstance.get('/auth/me');
-                setMember({ id: res.data.id, memberName: res.data.username });
+                const res = await authMe();
+                setMember({ id: res.id, memberName: res.username });
                 setIsLogin(true);
             } catch (error) {
                 // 토큰이 없거나 만료된 경우
