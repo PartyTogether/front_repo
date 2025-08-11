@@ -4,42 +4,47 @@ import { FaDiscord, FaHome, FaSearch } from "react-icons/fa";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import authInstance from "@/lib/api/authInstance";
-import {authMe, logout} from "@/lib/api/auth";
+import { authMe, logout } from "@/lib/api/auth";
+import {onRefresh} from "next/dist/client/components/react-dev-overlay/pages/client";
 
 interface Member {
     id: string;
+    globalName: string;
     memberName: string;
+    avatar: string | null;
 }
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const pathname = usePathname();
     const [member, setMember] = useState<Member | null>(null);
     const [isLogin, setIsLogin] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const getMember = async () => {
             try {
                 const res = await authMe();
-                setMember({ id: res.id, memberName: res.username });
+                console.log("res : ", res);
+                setMember(
+                    { id: res.id,
+                      globalName: res.globalname,
+                      memberName: res.username,
+                      avatar: res.avatar
+                    });
                 setIsLogin(true);
             } catch (error) {
-                // 토큰이 없거나 만료된 경우
                 setMember(null);
                 setIsLogin(false);
             }
         };
 
-        // 토큰 존재 여부를 먼저 확인
         const checkTokenAndGetMember = () => {
-            // 쿠키에서 토큰 확인
             const cookies = document.cookie;
             const hasToken = cookies.length > 0 && cookies.includes('auth_status');
             if (hasToken) {
-                // 토큰이 있을 때만 서버에 사용자 정보 요청
                 getMember();
             } else {
-                // 토큰이 없으면 로그아웃 상태로 설정
                 setMember(null);
                 setIsLogin(false);
             }
@@ -48,41 +53,66 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         checkTokenAndGetMember();
     }, []);
 
+
     const loginHandler = async () => {
         window.location.href = "http://localhost:5000/auth/discord";
     };
 
     const logoutHandler = async () => {
         try {
-            // 서버에서 쿠키를 제거하고 응답을 반환
-            await logout();
-            setMember(null);
-            setIsLogin(false);
-
-            alert("로그아웃 하였습니다.");
+            const res = await logout();
+            console.log("logout res : ", res);
+            if(res.status === 200)  {
+                setMember(null);
+                setIsLogin(false);
+                window.location.href = process.env.NEXT_PUBLIC_REFRESH_URL!;
+                alert(res.data.message);
+            } else {
+                alert(res.data.message);
+            }
         } catch (error) {
             console.error("로그아웃 중 오류 발생:", error);
-            // 에러가 발생해도 클라이언트 상태는 초기화
             setMember(null);
             setIsLogin(false);
             alert("로그아웃 중 오류 발생");
         }
     };
 
-    // 로딩 중일 때는 로그인 버튼을 비활성화하거나 로딩 표시
+    // ... 위에 import 및 useState 부분 동일
+
     const renderAuthButton = () => {
         if (isLogin && member) {
             return (
-                <div className="flex items-center gap-4">
-                    <span className="text-sm font-semibold text-gray-800">
-                        {member.memberName} 님
-                    </span>
+                <div className="relative" ref={dropdownRef}>
                     <button
-                        className="px-4 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold transition"
-                        onClick={logoutHandler}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#5865F2] hover:bg-[#4752c4] transition"
                     >
-                        로그아웃
+                        {/* 프로필 이미지 */}
+                        <img
+                            src={process.env.NEXT_PUBLIC_AVATAR_IMAGE_BASE! + member.id + "/" + member.avatar + ".png" || ""}
+                            alt="프로필"
+                            className="w-7 h-7 rounded-full border border-gray-300 object-cover"
+                        />
+                        {/* 닉네임 */}
+                        <span className="font-semibold text-white">{member.globalName}</span>
                     </button>
+
+                    {isDropdownOpen && (
+                        <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            <button
+                                className="block w-auto mx-auto text-center px-4 py-2 text-sm hover:bg-gray-100"
+                            >
+                                프로필
+                            </button>
+                            <button
+                                onClick={logoutHandler}
+                                className="block w-auto mx-auto text-center px-4 py-2 text-sm hover:bg-gray-100"
+                            >
+                                로그아웃
+                            </button>
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -117,8 +147,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                         className={`flex items-center gap-2 transform text-base transition duration-200 hover:scale-110
                       px-4 py-2 rounded-full ${pathname === "/"
                             ? "bg-[#5865F2] text-white shadow-lg"
-                            : "text-gray-800 hover:bg-gray-100"}
-                      `}
+                            : "text-gray-800 hover:bg-gray-100"}`}
                     >
                         <FaHome
                             className={`${pathname === "/" ? "text-white" : "text-gray-800"} w-5 h-5`}
@@ -131,8 +160,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                         className={`flex items-center gap-2 transform text-base transition duration-200 hover:scale-110
                       px-4 py-2 rounded-full ${pathname === "/room"
                             ? "bg-[#5865F2] text-white shadow-lg"
-                            : "text-gray-800 hover:bg-gray-100"}
-                      `}
+                            : "text-gray-800 hover:bg-gray-100"}`}
                     >
                         <FaSearch
                             className={`${pathname === "/room" ? "text-white" : "text-gray-800"} w-5 h-5`}
