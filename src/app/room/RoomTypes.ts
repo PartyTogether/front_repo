@@ -15,22 +15,32 @@ export interface RoomMeta {
     hasRoom: boolean;
 }
 
+export interface memberSkill{
+    skillName: string;
+    skillImage: string;
+    memberSkillLevel: number;
+}
+
 export interface member {
-    memberId: number;
+    memberId: string;
     memberName: string;
-    memberLevel: number;
+    memberLevel: number | null;
     memberClass: string;
+    memberSkills: memberSkill[];
 }
 
 export interface selectedRoom {
     roomId: string;
     roomTitle: string;
-    roomDesc: string;
+    roomDesc: string | null;
     roomMembers: member[];
     roomHost: string;
     roomCurrentMembers: number;
     roomMaxMembers: number;
-    roomIsFull: boolean;
+    roomChannel: string | null;
+    roomMinLevel: number;
+    roomMinTime: string;
+    roomPositions: roomPosition[];
 }
 
 export interface roomPosition{

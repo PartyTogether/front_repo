@@ -1,5 +1,5 @@
 import apiInstance from './apiInstance';
-import { createRoomReq, Room, RoomMeta} from '@/app/room/RoomTypes';
+import { createRoomReq, Room, RoomMeta, selectedRoom} from '@/app/room/RoomTypes';
 import useSWR from "swr";
 
 /**
@@ -68,6 +68,31 @@ export function useGetRooms(continent: string, huntingGround: string | null) {
 
     return {
         rooms: data,
+        isLoading,
+        isError: error,
+    };
+}
+
+/**
+ * 내방 정보 가져오기 (내파티 눌렀을때)
+ */
+export async function getMyRoom(): Promise<selectedRoom> {
+    console.log("내 파티 방 정보 가져오기");
+    const url = process.env.NEXT_PUBLIC_ROOM_ME!;
+    const res = await apiInstance.get(url);
+    console.log("내 파티 방 정보 data:",res.data);
+    return res.data;
+}
+
+/**
+ * 내방 정보 가져오기
+ */
+export function useMyRoom() {
+    const url = process.env.NEXT_PUBLIC_ROOM_ME!;
+    const { data, error, isLoading } = useSWR<selectedRoom>(url, fetcher);
+
+    return {
+        myRoom: data,
         isLoading,
         isError: error,
     };

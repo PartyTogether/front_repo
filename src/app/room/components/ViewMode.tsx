@@ -3,7 +3,7 @@ import { tw } from "@/styles/common";
 import {validators} from "tailwind-merge";
 interface ViewModeProps{
     viewMode : string;
-    setViewMode : (value:string) => void;
+    setViewMode : (mode:string) => void;
 }
 export default function( {viewMode, setViewMode}:ViewModeProps){
     const style = {
