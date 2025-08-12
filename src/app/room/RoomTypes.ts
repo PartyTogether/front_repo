@@ -9,6 +9,12 @@ export interface Continent {
     huntingGrounds: HuntingGround[];
 }
 
+export interface RoomMeta {
+    continents: Continent[];
+    isLoggedIn: boolean;
+    hasRoom: boolean;
+}
+
 export interface member {
     memberId: number;
     memberName: string;
