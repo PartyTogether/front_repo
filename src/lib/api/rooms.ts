@@ -1,5 +1,5 @@
 import apiInstance from './apiInstance';
-import {Continent, createRoomReq, Room} from '@/app/room/RoomTypes';
+import { createRoomReq, Room, RoomMeta} from '@/app/room/RoomTypes';
 import useSWR from "swr";
 
 /**
@@ -16,9 +16,10 @@ export async function createRoom(data: createRoomReq) {
 /**
  *  /room 경로의 초기 메타 데이터 api
  */
-export async function fetchRoomPageData(): Promise<Continent[]> {
+export async function fetchRoomPageData(): Promise<RoomMeta> {
     console.log("방 메타데이터 가져오기 실행");
     const res = await apiInstance.get(process.env.NEXT_PUBLIC_ROOM_META!);
+    console.log('방 메타 데이터 :',res.data);
     return res.data;
 }
 

@@ -22,8 +22,8 @@ export default function RoomPage() {
     const [viewMode, setViewMode] = useState('OTHER_PARTY');
     const [roomList, setRoomList] = useState<Room[] | null>(null);
 
-    const isLoggedIn = true;
-    const hasRoom = false;
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [hasRoom, setHasRoom] = useState(false);
 
     const { rooms: fetchedRooms, isLoading, isError } = useGetRooms(selectedContinent, selectedHuntingGround);
 
@@ -45,9 +45,11 @@ export default function RoomPage() {
         const loadRoomPageData = async () => {
             try {
                 const data = await fetchRoomPageData();
-                setContinents(data);
+                setContinents(data.continents);
+                setIsLoggedIn(data.isLoggedIn);
+                setHasRoom(data.hasRoom);
             } catch (error) {
-                console.error("Error fetching room page data:", error);
+                console.error("방 메타 데이터 가져오는중 오류 발생", error);
             }
         };
         void loadRoomPageData();
