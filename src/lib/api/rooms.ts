@@ -56,7 +56,7 @@ export function useRoom(roomId: number | null) {
  * @param huntingGround 선택된 사냥터 (선택)
  */
 export function useGetRooms(continent: string, huntingGround: string | null) {
-    let url = process.env.NEXT_PUBLIC_ROOMS!;
+    let url = process.env.NEXT_PUBLIC_GET_ROOMS!;
     if (continent) {
         url += `?continent=${encodeURIComponent(continent)}`;
         if (huntingGround) {

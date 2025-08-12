@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
 import { createRoomReq, Continent } from '../RoomTypes';
 import { useState, useMemo, useEffect } from "react";
 import { createRoom } from "@/lib/api/rooms";
 import { cn } from "@/lib/utils";
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 interface PositionOption {
     comment: string;
@@ -12,6 +14,7 @@ interface PositionOption {
 
 interface RoomMakeProps {
     continents: Continent[];
+    setHasRoom: (hasRoom: boolean) => void;
 }
 
 interface ParsedPositions {
@@ -19,7 +22,8 @@ interface ParsedPositions {
     support: string[];
 }
 
-export default function RoomCreate({ continents }: RoomMakeProps) {
+export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
+    const router = useRouter();
     const [roomTitle, setRoomTitle] = useState("");
     const [roomDesc, setRoomDesc] = useState("");
     const [roomMinLevel, setRoomMinLevel] = useState(1);
@@ -163,14 +167,34 @@ export default function RoomCreate({ continents }: RoomMakeProps) {
             roomMinTime,
             roomChannel,
             roomHuntingGround,
-            roomPositions: selectedPositions,
+            roomPositions: [...new Set([hostPosition, ...selectedPositions])],
             roomPositionComments,
             hostPosition,
         };
-        console.log(roomData);
-        try{
-            const data = await createRoom(roomData);
-        } catch (err){
+
+        try {
+            await createRoom(roomData);
+            Swal.fire({
+                icon: 'success',
+                title: '방 생성 성공!',
+                text: '성공적으로 방을 만들었습니다.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: '확인'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setHasRoom(true);
+                    router.push('/room');
+                }
+            });
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
+            Swal.fire({
+                icon: 'error',
+                title: '방 만들기 실패',
+                text: errorMessage,
+                confirmButtonColor: '#d33',
+                confirmButtonText: '확인'
+            });
             console.error(err);
         }
     };
