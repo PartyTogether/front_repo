@@ -8,7 +8,7 @@ import RoomInfo from '@/app/room/components/RoomInfo';
 import { cn } from '@/lib/utils';
 import ViewMode from '@/app/room/components/ViewMode';
 import MyRoom from '@/app/room/components/MyRoom';
-import { fetchRoomPageData, useGetRooms } from '@/lib/api/rooms';
+import { fetchRoomPageData, useGetRooms, getMyRoom } from '@/lib/api/rooms';
 import RoomCreate from '@/app/room/components/RoomCreate';
 import { Continent, member, selectedRoom, Room } from '@/app/room/RoomTypes';
 import Swal from 'sweetalert2';
@@ -39,7 +39,7 @@ export default function RoomPage() {
         items_center: 'flex flex-col items-center',
     };
 
-    const handleViewModeChange = (mode: string) => {
+    const handleViewModeChange = async (mode: string) => {
         if (mode === 'MAKE_PARTY') {
             if (!isLoggedIn) {
                 Swal.fire({
@@ -60,6 +60,48 @@ export default function RoomPage() {
                     confirmButtonText: '확인'
                 });
                 return;
+            }
+        }
+        if (mode === 'MY_PARTY') {
+            if (!isLoggedIn) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '로그인 필요',
+                    text: '내 파티를 보려면 먼저 로그인해야 합니다.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: '확인'
+                });
+                return;
+            }
+            if (!hasRoom) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '내 파티 없음',
+                    text: '현재 참여 중인 파티가 없습니다.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: '확인'
+                });
+                return;
+            }
+            if (hasRoom) {
+                try {
+                    const data = await getMyRoom();
+                    setSelectedRoom(data);
+                    setSelectedRoomId(data.roomId);
+                } catch (err: any) {
+                    const errorMessage = err.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
+                    Swal.fire({
+                        icon: 'error',
+                        title: '오류',
+                        text: errorMessage,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: '확인'
+                    }).then((result) => {
+                        if(result.isConfirmed){
+                            setViewMode('OTHER_PARTY');
+                        }
+                    });
+                }
             }
         }
         setViewMode(mode);

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { tw } from "@/styles/common";
 import Image from "next/image";
-import { member, selectedRoom } from '@/app/room/RoomTypes';
+import {memberSkill, selectedRoom} from '@/app/room/RoomTypes';
 
 
 interface RoomInfoProps {
@@ -14,8 +14,27 @@ interface RoomInfoProps {
 
 export default function RoomInfo({ room, onClose }: RoomInfoProps) {
     const hostMember = room.roomMembers.find((member) => member.memberName === room.roomHost);
-    const otherMembers = room.roomMembers.filter((member) => member.memberName !== room.roomHost);
     const [isClosing, setIsClosing] = useState(false);
+
+    const groupedPositions: { [key: string]: typeof room.roomPositions } = {
+        '1층': [],
+        '2층': [],
+        '3층': [],
+        '서폿': [],
+    };
+
+    room.roomPositions.forEach(position => {
+        if (position.positionName.startsWith('1')) {
+            groupedPositions['1층'].push(position);
+        } else if (position.positionName.startsWith('2')) {
+            groupedPositions['2층'].push(position);
+        } else if (position.positionName === '3층') {
+            groupedPositions['3층'].push(position);
+        } else if (position.positionName.includes('서폿')) {
+            groupedPositions['서폿'].push(position);
+        } else {
+        }
+    });
 
 
     const style = {
@@ -27,9 +46,34 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
         title: "text-xl font-bold w-100",
         headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500",
         hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-300",
-        partnerListDiv: "grid grid-cols-1 gap-2",
-        partnerDiv: "border border-gray-300 rounded-lg text-left py-2 px-2 text-gray-500 font-medium",
+        floorSection: "mb-4 last:mb-0",
+        floorTitle: "text-lg font-bold text-gray-800 mb-2",
+        positionGrid: "grid gap-2",
+        positionCard: "border rounded-lg p-2 text-center",
+        positionCardRecruiting: "border-blue-400 bg-blue-50",
+        positionCardFilled: "border-gray-300 bg-gray-50",
+        positionNameText: "font-semibold text-gray-700",
+        positionStatusText: "text-sm",
+        positionStatusRecruiting: "text-blue-600",
+        positionStatusFilled: "text-gray-500",
+        positionMemberText: "text-xs text-gray-600 mt-1 flex items-center justify-center gap-1",
+        positionCommentText: "text-xs text-gray-500 mt-1",
     }
+
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipContent, setTooltipContent] = useState<memberSkill[]>([]);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>, skills: memberSkill[]) => {
+        setTooltipContent(skills);
+        setShowTooltip(true);
+        setTooltipPosition({ x: e.currentTarget.offsetLeft, y: e.currentTarget.offsetTop + e.currentTarget.offsetHeight });
+    };
+
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+        setTooltipContent([]);
+    };
 
     const handleCloseClick = () => {
         setIsClosing(true);
@@ -85,16 +129,71 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                 </div>
             )}
 
-            <div className={style.partnerListDiv}>
-                {otherMembers.map((member) => (
-                    <div
-                        key={member.memberId}
-                        className={style.partnerDiv}
-                    >
-                        {member.memberLevel}Lv {member.memberClass} {member.memberName}
-                    </div>
-                ))}
+            <div className="mt-5">
+                {Object.entries(groupedPositions).map(([floor, positions]) => {
+                    if (positions.length === 0) return null;
+                    const isSinglePosition = positions.length === 1;
+                    const gridColsClass = isSinglePosition ? "grid-cols-1" : "grid-cols-3";
+
+                    return (
+                        <div key={floor} className={style.floorSection}>
+                            <h3 className={style.floorTitle}>{floor}</h3>
+                            <div className={cn(style.positionGrid, gridColsClass)}>
+                                {positions.map((position) => (
+                                    <div
+                                        key={position.positionName}
+                                        className={cn(
+                                            style.positionCard,
+                                            position.positionStatus === "모집중" ? style.positionCardRecruiting : style.positionCardFilled,
+                                            position.positionName === "3층" && "col-span-3",
+                                            isSinglePosition && "col-span-3"
+                                        )}
+                                    >
+                                        <div className={style.positionNameText}>{position.positionName}</div>
+                                        <div className={cn(
+                                            style.positionStatusText,
+                                            position.positionStatus === "모집중" ? style.positionStatusRecruiting : style.positionStatusFilled
+                                        )}>
+                                            {position.positionStatus}
+                                        </div>
+                                        {position.member ? (
+                                            <div
+                                                className={style.positionMemberText}
+                                                onMouseEnter={(e) => position.member && handleMouseEnter(e, position.member.memberSkills)}
+                                                onMouseLeave={handleMouseLeave}
+                                            >
+                                                {position.member.memberLevel}Lv {position.member.memberClass} {position.member.memberName}
+                                                {hostMember && position.member.memberId === hostMember.memberId && (
+                                                    <FaCrown className="text-yellow-400" />
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className={style.positionCommentText}>{position.positionComment || "-"}</div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
+            {showTooltip && (
+                <div
+                    className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 z-50"
+                    style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
+                >
+                    {tooltipContent.length > 0 ? (
+                        tooltipContent.map((skill, index) => (
+                            <div key={index} className="flex items-center gap-1">
+                                {skill.skillImage && <Image src={skill.skillImage} alt={skill.skillName} width={16} height={16} />}
+                                <span>{skill.skillName} ({skill.memberSkillLevel})</span>
+                            </div>
+                        ))
+                    ) : (
+                        <span>스킬 정보 없음</span>
+                    )}
+                </div>
+            )}
             <div className={cn(tw.acceptBtn,"mt-5")}>
                 가입 신청
             </div>
