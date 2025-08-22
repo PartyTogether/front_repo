@@ -10,23 +10,23 @@ import ViewMode from '@/app/room/components/ViewMode';
 import MyRoom from '@/app/room/components/MyRoom';
 import { fetchRoomPageData, useGetRooms, getMyRoom } from '@/lib/api/rooms';
 import RoomCreate from '@/app/room/components/RoomCreate';
-import { Continent, member, selectedRoom, Room } from '@/app/room/RoomTypes';
+import { Continent, Room } from '@/app/room/RoomTypes';
 import Swal from 'sweetalert2';
+import { useRoomSocket } from '@/lib/hooks/useRoomSocket';
 
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [selectedContinent, setSelectedContinent] = useState('');
     const [selectedHuntingGround, setSelectedHuntingGround] = useState('');
     const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
-    const [selectedRoom, setSelectedRoom] = useState<selectedRoom | null>(null);
     const [continents, setContinents] = useState<Continent[]>([]);
     const [viewMode, setViewMode] = useState('OTHER_PARTY');
     const [roomList, setRoomList] = useState<Room[] | null>(null);
-
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [hasRoom, setHasRoom] = useState(true);
 
-    const { rooms: fetchedRooms, isLoading, isError } = useGetRooms(selectedContinent, selectedHuntingGround);
+    const { rooms: fetchedRooms, isLoading: isRoomsLoading, isError: isRoomsError } = useGetRooms(selectedContinent, selectedHuntingGround);
+    const { roomData: selectedRoom, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
 
     const style = {
         roomPageDiv: 'min-h-screen bg-white',
@@ -42,51 +42,26 @@ export default function RoomPage() {
     const handleViewModeChange = async (mode: string) => {
         if (mode === 'MAKE_PARTY') {
             if (!isLoggedIn) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '로그인 필요',
-                    text: '방을 만들려면 먼저 로그인해야 합니다.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: '확인'
-                });
+                Swal.fire({ icon: 'error', title: '로그인 필요', text: '방을 만들려면 먼저 로그인해야 합니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
                 return;
             }
             if (hasRoom) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: '참여 중인 방 있음',
-                    text: '이미 참여중인 방이 있습니다. 새로운 방을 만들 수 없습니다.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: '확인'
-                });
+                Swal.fire({ icon: 'warning', title: '참여 중인 방 있음', text: '이미 참여중인 방이 있습니다. 새로운 방을 만들 수 없습니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
                 return;
             }
         }
         if (mode === 'MY_PARTY') {
             if (!isLoggedIn) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '로그인 필요',
-                    text: '내 파티를 보려면 먼저 로그인해야 합니다.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: '확인'
-                });
+                Swal.fire({ icon: 'error', title: '로그인 필요', text: '내 파티를 보려면 먼저 로그인해야 합니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
                 return;
             }
             if (!hasRoom) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: '내 파티 없음',
-                    text: '현재 참여 중인 파티가 없습니다.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: '확인'
-                });
+                Swal.fire({ icon: 'warning', title: '내 파티 없음', text: '현재 참여 중인 파티가 없습니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
                 return;
             }
             if (hasRoom) {
                 try {
                     const data = await getMyRoom();
-                    setSelectedRoom(data);
                     setSelectedRoomId(data.roomId);
                 } catch (err: any) {
                     const errorMessage = err.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
@@ -122,21 +97,12 @@ export default function RoomPage() {
     }, []);
 
     useEffect(() => {
-        if (selectedContinent && !isLoading) {
+        if (selectedContinent && !isRoomsLoading) {
             if (fetchedRooms) {
                 setRoomList(fetchedRooms);
             }
         }
-    }, [selectedContinent, selectedHuntingGround, fetchedRooms, isLoading]);
-
-
-
-    useEffect(() => {
-        if (selectedRoomId !== null) {
-        } else {
-            setSelectedRoom(null);
-        }
-    }, [selectedRoomId]);
+    }, [selectedContinent, selectedHuntingGround, fetchedRooms, isRoomsLoading]);
 
     const handleRoomSelect = (id: string) => {
         setSelectedRoomId(id);
@@ -161,28 +127,30 @@ export default function RoomPage() {
             <div
                 className={cn(
                     style.roomSection,
-                    selectedRoom ? style.isRoomSectionSelectedRoomTrue : style.isRoomSectionSelectedRoomFalse
+                    selectedRoomId ? style.isRoomSectionSelectedRoomTrue : style.isRoomSectionSelectedRoomFalse
                 )}
             >
-                {selectedRoom && (
+                {selectedRoomId && (
                     <div className={style.roomInfoDiv}>
-                        <RoomInfo room={selectedRoom} onClose={handleRoomInfoClose} />
+                        {isRoomLoading && <p>Loading room details...</p>}
+                        {roomError && <p>Error loading room details.</p>}
+                        {selectedRoom && <RoomInfo room={selectedRoom} onClose={handleRoomInfoClose} />}
                     </div>
                 )}
 
                 <div
                     className={cn(
-                        selectedRoom ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse,
+                        selectedRoomId ? style.isRoomsSelectedRoomTrue : style.isRoomsSelectedRoomFalse,
                         viewMode === 'MAKE_PARTY' && style.items_center
                     )}
                 >
                     <ViewMode viewMode={viewMode} setViewMode={handleViewModeChange} />
                     {viewMode === 'OTHER_PARTY' ? (
                         <>
-                            {isLoading && <p>Loading...</p>}
-                            {isError && <p>Error fetching data.</p>}
-                            {!isLoading && !isError && (
-                                <Rooms roomList={roomList} handleRoomSelect={handleRoomSelect} selectedRoom={selectedRoom} />
+                            {isRoomsLoading && <p>Loading...</p>}
+                            {isRoomsError && <p>Error fetching data.</p>}
+                            {!isRoomsLoading && !isRoomsError && (
+                                <Rooms roomList={roomList} handleRoomSelect={handleRoomSelect} selectedRoomId={selectedRoomId} />
                             )}
                         </>
                     ) : viewMode === 'MAKE_PARTY' ? (
