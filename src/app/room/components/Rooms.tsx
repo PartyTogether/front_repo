@@ -10,10 +10,10 @@ import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
 interface RoomsProps {
     roomList: Room[] | null;
     handleRoomSelect: (id: string) => void;
-    selectedRoom: selectedRoom | null;
+    selectedRoomId: string | null;
 }
 
-export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: RoomsProps) {
+export default function Rooms({ roomList, handleRoomSelect, selectedRoomId }: RoomsProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const loaderRef = useRef(null);
@@ -95,7 +95,7 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                         onClick={() => handleRoomSelect(room.roomId)}
                         className={cn(
                             style.roomDiv,
-                            selectedRoom?.roomId === room.roomId && "translate-x-2 shadow-md"
+                            selectedRoomId === room.roomId && "translate-x-2 shadow-md"
                         )}
                     >
                         {/* 왼쪽 */}
