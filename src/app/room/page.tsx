@@ -134,7 +134,7 @@ export default function RoomPage() {
                     <div className={style.roomInfoDiv}>
                         {isRoomLoading && <p>Loading room details...</p>}
                         {roomError && <p>Error loading room details.</p>}
-                        {selectedRoom && <RoomInfo room={selectedRoom} onClose={handleRoomInfoClose} />}
+                        {selectedRoom && <RoomInfo room={selectedRoom} isLoggedIn={isLoggedIn} onClose={handleRoomInfoClose} />}
                     </div>
                 )}
 
