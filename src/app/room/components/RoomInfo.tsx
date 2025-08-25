@@ -11,9 +11,10 @@ interface RoomInfoProps {
     room: selectedRoom;
     isLoggedIn: boolean;
     onClose: () => void;
+    viewMode: string;
 }
 
-export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
+export default function RoomInfo({ room, isLoggedIn, onClose, viewMode }: RoomInfoProps) {
     const hostMember = room.roomMembers.find((member) => member.memberId === room.roomHost);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -97,6 +98,15 @@ export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
         }
     };
 
+    const handleLeaveParty = async () => {
+        await Swal.fire({ icon: 'info', title: '파티 떠나기', text: '파티를 떠나시겠습니까?', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: '확인', cancelButtonText: '취소' }).then((result) => {
+            if (result.isConfirmed) {
+                // 파티 떠나기 로직 추가
+                Swal.fire('완료', '파티를 떠났습니다.', 'success');
+            }
+        });
+    };
+
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isClosing) {
@@ -145,8 +155,22 @@ export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
             <div className="mt-5">
                 {Object.entries(groupedPositions).map(([floor, positions]) => {
                     if (positions.length === 0) return null;
+
+                    const getGridColsClass = (count: number) => {
+                        switch (count) {
+                            case 1:
+                                return "grid-cols-1";
+                            case 2:
+                                return "grid-cols-2";
+                            case 3:
+                                return "grid-cols-3";
+                            default:
+                                return "grid-cols-3";
+                        }
+                    };
+
+                    const gridColsClass = getGridColsClass(positions.length);
                     const isSinglePosition = positions.length === 1;
-                    const gridColsClass = isSinglePosition ? "grid-cols-1" : "grid-cols-3";
 
                     return (
                         <div key={floor} className={style.floorSection}>
@@ -181,7 +205,7 @@ export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
                                                 )}
                                             </div>
                                         ) : (
-                                            position.positionStatus === "모집중" ? (
+                                            position.positionStatus === "모집중" && viewMode === 'OTHER_PARTY' ? (
                                                 <button
                                                     onClick={() => handleApply(position.positionName)}
                                                     className={style.applyBtn}
@@ -199,6 +223,17 @@ export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
                     );
                 })}
             </div>
+
+            {viewMode === 'MY_PARTY' && (
+                <div className="mt-4">
+                    <button
+                        onClick={handleLeaveParty}
+                        className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                        파티 떠나기
+                    </button>
+                </div>
+            )}
 
             {showTooltip && (
                 <div

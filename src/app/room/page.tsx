@@ -79,6 +79,9 @@ export default function RoomPage() {
                 }
             }
         }
+        if(mode === 'OTHER_PARTY'){
+            setSelectedRoomId(null);
+        }
         setViewMode(mode);
     };
 
@@ -134,7 +137,7 @@ export default function RoomPage() {
                     <div className={style.roomInfoDiv}>
                         {isRoomLoading && <p>Loading room details...</p>}
                         {roomError && <p>Error loading room details.</p>}
-                        {selectedRoom && <RoomInfo room={selectedRoom} isLoggedIn={isLoggedIn} onClose={handleRoomInfoClose} />}
+                        {selectedRoom && <RoomInfo room={selectedRoom} isLoggedIn={isLoggedIn} onClose={handleRoomInfoClose} viewMode={viewMode} />}
                     </div>
                 )}
 
