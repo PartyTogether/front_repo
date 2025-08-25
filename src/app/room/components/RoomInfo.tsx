@@ -2,18 +2,19 @@ import { FaCrown } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { tw } from "@/styles/common";
 import Image from "next/image";
-import {memberSkill, selectedRoom} from '@/app/room/RoomTypes';
-
+import { memberSkill, selectedRoom, applyToRoomReq } from '@/app/room/RoomTypes';
+import { applyToRoom } from "@/lib/api/rooms";
+import Swal from 'sweetalert2';
 
 interface RoomInfoProps {
     room: selectedRoom;
+    isLoggedIn: boolean;
     onClose: () => void;
 }
 
-export default function RoomInfo({ room, onClose }: RoomInfoProps) {
-    const hostMember = room.roomMembers.find((member) => member.memberName === room.roomHost);
+export default function RoomInfo({ room, isLoggedIn, onClose }: RoomInfoProps) {
+    const hostMember = room.roomMembers.find((member) => member.memberId === room.roomHost);
     const [isClosing, setIsClosing] = useState(false);
 
     const groupedPositions: { [key: string]: typeof room.roomPositions } = {
@@ -32,10 +33,8 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
             groupedPositions['3층'].push(position);
         } else if (position.positionName.includes('서폿')) {
             groupedPositions['서폿'].push(position);
-        } else {
         }
     });
-
 
     const style = {
         roomInfoDiv: "bg-white p-4 rounded-lg shadow h-fit sticky transition-transform transition-opacity duration-300",
@@ -58,6 +57,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
         positionStatusFilled: "text-gray-500",
         positionMemberText: "text-xs text-gray-600 mt-1 flex items-center justify-center gap-1",
         positionCommentText: "text-xs text-gray-500 mt-1",
+        applyBtn: "mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm",
     }
 
     const [showTooltip, setShowTooltip] = useState(false);
@@ -77,7 +77,24 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
 
     const handleCloseClick = () => {
         setIsClosing(true);
+    };
 
+    const handleApply = async (positionName: string) => {
+        if(!isLoggedIn){
+            await Swal.fire({icon:'error', title: '신청 실패', text: '로그인이 필요한 기능입니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인'});
+            return;
+        }
+        const applyToRoomReqData: applyToRoomReq = {
+            roomId: room.roomId,
+            roomPositionName: positionName,
+        }
+        try {
+            await applyToRoom(applyToRoomReqData);
+            await Swal.fire({ icon: 'success', title: '신청 완료', text: '파티 가입 신청이 완료되었습니다.', confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
+            await Swal.fire({ icon: 'error', title: '신청 실패', text: errorMessage, confirmButtonColor: '#3085d6', confirmButtonText: '확인' });
+        }
     };
 
     useEffect(() => {
@@ -88,8 +105,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
             }, 300);
         }
         return () => clearTimeout(timer);
-    }, [isClosing]);
-
+    }, [isClosing, onClose]);
 
     return (
         <div className={cn(
@@ -117,13 +133,10 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                     />
                     {room.roomCurrentMembers} / {room.roomMaxMembers}
                 </div>
-
             </div>
 
-
             {hostMember && (
-                <div
-                    className={style.hostDiv}>
+                <div className={style.hostDiv}>
                     <FaCrown className="text-yellow-400" />
                     {hostMember.memberLevel}Lv {hostMember.memberClass} {hostMember.memberName}
                 </div>
@@ -168,7 +181,16 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className={style.positionCommentText}>{position.positionComment || "-"}</div>
+                                            position.positionStatus === "모집중" ? (
+                                                <button
+                                                    onClick={() => handleApply(position.positionName)}
+                                                    className={style.applyBtn}
+                                                >
+                                                    가입 신청
+                                                </button>
+                                            ) : (
+                                                <div className={style.positionCommentText}>{position.positionComment || "-"}</div>
+                                            )
                                         )}
                                     </div>
                                 ))}
@@ -177,6 +199,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                     );
                 })}
             </div>
+
             {showTooltip && (
                 <div
                     className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 z-50"
@@ -194,9 +217,7 @@ export default function RoomInfo({ room, onClose }: RoomInfoProps) {
                     )}
                 </div>
             )}
-            <div className={cn(tw.acceptBtn,"mt-5")}>
-                가입 신청
-            </div>
         </div>
     );
 }
+
