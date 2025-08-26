@@ -6,7 +6,6 @@ export default function DiscordBox({ channelName, channelId }: { channelName: st
                 src={`https://discord.com/widget?id=${channelId}&theme=light`}
                 width="100%"
                 height="90%"
-                allowTransparency={true}
                 frameBorder="0"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             ></iframe>
