@@ -19,9 +19,9 @@ export default function MemberUpdate({member} :MemberInfoProps)    {
                 {/* 닉네임, 직업, 레벨 한 줄 */}
                 <div
                     className="flex flex-wrap items-center justify-center gap-15 text-xl font-semibold text-gray-800 mb-10">
-                    <span className="text-blue-600">Lv : <input className="border-1 rounded-lg text-center w-30" type="text" defaultValue={member.level}/></span>
-                    <span>닉네임 : <input className="border-1 rounded-lg text-center w-50" type="text" defaultValue={member.nickName}/></span>
-                    <span className="text-gray-600">직업 : {member.job}</span>
+                    <span className="text-blue-600">Lv : <input className="border-1 rounded-lg text-center w-30" type="text" defaultValue={member.level ?? 1}/></span>
+                    <span>닉네임 : <input className="border-1 rounded-lg text-center w-50" type="text" defaultValue={member.nickName ?? "미등록"}/></span>
+                    <span className="text-gray-600">직업 : {member.job ?? "초보자"}</span>
                 </div>
 
                 {/* 보유 스킬 */}
