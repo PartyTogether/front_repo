@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { FaDiscord, FaHome, FaSearch } from "react-icons/fa";
+import {FaBaby, FaDiscord, FaHome, FaPaperclip, FaSearch} from "react-icons/fa";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authMe, logout } from "@/lib/api/auth";
+import {getMemberInfo} from "@/lib/api/member";
+import {FaCircleCheck} from "react-icons/fa6";
 
 interface Member {
     id: string;
@@ -98,15 +100,16 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                     </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                            <button
-                                className="block w-auto mx-auto text-center px-4 py-2 text-sm hover:bg-gray-100"
+                        <div className="absolute left-0.5 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            <Link
+                                href="/member"
+                                className={`block w-auto mx-auto text-center px-4 py-2 text-m hover:bg-gray-100`}
                             >
-                                프로필
-                            </button>
+                                <span>프로필</span>
+                            </Link>
                             <button
                                 onClick={logoutHandler}
-                                className="block w-auto mx-auto text-center px-4 py-2 text-sm hover:bg-gray-100"
+                                className="block w-auto mx-auto text-center px-4 py-2 text-m hover:bg-gray-100"
                             >
                                 로그아웃
                             </button>
