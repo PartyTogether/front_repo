@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { TiStar } from "react-icons/ti";
+import { IoMdRefresh } from "react-icons/io";
 import Image from "next/image";
 import { tw } from "@/styles/common";
 import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
@@ -10,14 +11,17 @@ import { member, selectedRoom, Room} from '@/app/room/RoomTypes';
 interface RoomsProps {
     roomList: Room[] | null;
     handleRoomSelect: (id: string) => void;
-    selectedRoom: selectedRoom | null;
+    selectedRoomId: string | null;
 }
 
-export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: RoomsProps) {
+export default function Rooms({ roomList, handleRoomSelect, selectedRoomId }: RoomsProps) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [hideFullRooms, setHideFullRooms] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const loaderRef = useRef(null);
     const [viewMode, setViewMode] = useState("OTHER");
+
 
     const style = {
         selectedRoomInfoNavBtn: "",
@@ -43,8 +47,16 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
         roomDivRight: "text-right items-center ",
         roomDivRightDesc: "mt-1 text-xs font-normal text-gray-400",
         roomDivRightInfo: "flex items-center gap-2 text-gray-700 text-xl font-semibold px-3 py-1 rounded-full",
-        acceptBtn: "mt-13",
         // 방 리스트 박스
+
+        // 필터
+        filterBar: "flex justify-between items-center mb-4",
+        filterOptions: "flex items-center space-x-2",
+        filterButton: "px-4 py-2 rounded-full text-sm font-small transition-colors",
+        filterButtonActive: "bg-indigo-600 text-white",
+        filterButtonInactive: "bg-white text-gray-600 hover:bg-gray-300",
+        refreshButton: "p-2 rounded-full hover:bg-gray-200 transition-colors",
+        // 필터
     };
 
     // 무한 스크롤 감지기
@@ -64,13 +76,28 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
     }, []);
 
     // 필터링된 방 리스트
-    // const filteredRooms = rooms?.filter((room) => {
-    //     if (!searchTerm) return true;
-    //     return (
-    //         room.title.includes(searchTerm) ||
-    //         room.host.includes(searchTerm)
-    //     );
-    // });
+    const filteredRooms = roomList
+        ?.filter((room) => {
+            if (hideFullRooms && room.roomCurrentMembers >= room.roomMaxMembers) {
+                return false;
+            }
+            return true;
+        })
+        .filter((room) => {
+            if (!searchTerm) return true;
+            return (
+                room.roomTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                room.roomHost.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+
+        setTimeout(() => {
+            setIsRefreshing(false);
+        }, 1000);
+    };
 
     return (
         <section>
@@ -87,15 +114,42 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                 </button>
             </div>
 
+            <div className={style.filterBar}>
+                <div className={style.filterOptions}>
+                    <button
+                        onClick={() => setHideFullRooms(!hideFullRooms)}
+                        className={cn(
+                            style.filterButton,
+                            hideFullRooms
+                                ? style.filterButtonActive
+                                : style.filterButtonInactive
+                        )}
+                    >
+                        꽉찬 방 안보기
+                    </button>
+                </div>
+                <button
+                    onClick={handleRefresh}
+                    className={style.refreshButton}
+                    aria-label="새로고침"
+                >
+                    <IoMdRefresh
+                        className={cn("w-6 h-6 text-gray-600", {
+                            "animate-spin": isRefreshing,
+                        })}
+                    />
+                </button>
+            </div>
+
             {/* 방 리스트 */}
             <div className={style.roomListDiv}>
-                {roomList?.map((room) => (
+                {filteredRooms?.map((room) => (
                     <div
                         key={room.roomId}
                         onClick={() => handleRoomSelect(room.roomId)}
                         className={cn(
                             style.roomDiv,
-                            selectedRoom?.roomId === room.roomId && "translate-x-2 shadow-md"
+                            selectedRoomId === room.roomId && "translate-x-2 shadow-md"
                         )}
                     >
                         {/* 왼쪽 */}
@@ -133,7 +187,6 @@ export default function Rooms({ roomList, handleRoomSelect, selectedRoom }: Room
                                 {room.roomCurrentMembers} / {room.roomMaxMembers}
                             </div>
                             <p className={style.roomDivRightDesc}>{room.roomDesc}</p>
-                            <div className={cn(tw.acceptBtn, style.acceptBtn)}>가입신청</div>
                         </div>
                     </div>
                 ))}

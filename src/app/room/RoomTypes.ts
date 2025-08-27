@@ -76,3 +76,9 @@ export interface createRoomReq {
     roomPositionComments: Record<string, string>,
     hostPosition: string,
 }
+
+// 가입신청
+export interface applyToRoomReq {
+    roomId: string,
+    roomPositionName: string,
+}
