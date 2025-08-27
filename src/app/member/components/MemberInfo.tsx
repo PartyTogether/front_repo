@@ -17,9 +17,9 @@ export default function MemberInfo({member, mode} :MemberInfoProps)    {
                 {/* 닉네임, 직업, 레벨 한 줄 */}
                 <div
                     className="flex flex-wrap items-center justify-center gap-36 text-xl font-semibold text-gray-800 mb-10">
-                    <span className="text-blue-600">Lv.{member.level}</span>
-                    <span>{member.nickName}</span>
-                    <span className="text-gray-600">{member.job}</span>
+                    <span className="text-blue-600">Lv.{member.level ?? 1}</span>
+                    <span>{member.nickName ?? "미등록"}</span>
+                    <span className="text-gray-600">{member.job ?? "초보자"}</span>
                 </div>
 
                 {/* 보유 스킬 */}
