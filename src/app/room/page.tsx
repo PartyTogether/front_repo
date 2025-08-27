@@ -26,7 +26,10 @@ export default function RoomPage() {
     const [hasRoom, setHasRoom] = useState(true);
 
     const { rooms: fetchedRooms, isLoading: isRoomsLoading, isError: isRoomsError } = useGetRooms(selectedContinent, selectedHuntingGround);
-    const { roomData: selectedRoom, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
+    const { roomData: roomSocketData, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
+    const selectedRoom = roomSocketData?.roomData;
+    const applicants = roomSocketData?.applicants;
+    const chatMessages = roomSocketData?.chatMessages;
 
     const style = {
         roomPageDiv: 'min-h-screen bg-white',
@@ -159,7 +162,7 @@ export default function RoomPage() {
                     ) : viewMode === 'MAKE_PARTY' ? (
                         <RoomCreate continents={continents} setHasRoom={setHasRoom} />
                     ) : (
-                        <MyRoom />
+                        <MyRoom room={selectedRoom} applicants={applicants}/>
                     )}
                 </div>
             </div>

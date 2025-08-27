@@ -1,25 +1,30 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
+import { selectedRoom, Applicant } from "@/app/room/RoomTypes";
+import { cn } from "@/lib/utils";
 
-// API로부터 받아올 신청자 데이터의 타입을 정의합니다.
-// 실제 데이터 구조에 맞게 수정해야 합니다.
-interface Applicant {
+interface TestApplicant {
     id: number;
     name: string;
     level: number;
     class: string;
+    position: string;
+}
+interface ApplicantsProps {
+    room:selectedRoom;
+    applicants: Applicant[];
 }
 
-export default function Applicants() {
-    const [applicants, setApplicants] = useState<Applicant[]>([]);
+export default function Applicants({ room, applicants } :ApplicantsProps) {
+    const [testApplicants, setTestApplicants] = useState<TestApplicant[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
     const style = {
         loading: "text-center p-4 text-gray-500",
         error: "text-center p-4 text-red-500",
-        container: "divide-y divide-gray-200",
         title: "text-xl font-bold mb-4",
         emptyMessage: "text-center py-4 text-gray-500",
         list: "space-y-3",
@@ -27,11 +32,34 @@ export default function Applicants() {
         applicantInfo: "flex-grow",
         applicantName: "font-semibold",
         applicantMeta: "text-sm text-gray-500",
-        applicantMessage: "text-gray-600 mt-1",
         buttonGroup: "flex gap-2 flex-shrink-0 ml-4",
         acceptButton: "px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors",
         rejectButton: "px-3 py-1 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors",
+        tabContainer: "flex border-b mb-4",
+        tabButton: "px-4 py-2 -mb-px border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
+        tabButtonActive: "text-indigo-600 border-indigo-600",
     };
+
+    const sortPositions = (positions: string[]) => {
+        const koreanOrder: Record<string, number> = { '좌': 1, '중': 2, '우': 3, '층': 4 };
+        positions.sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)?.[0] || '0');
+            const numB = parseInt(b.match(/\d+/)?.[0] || '0');
+
+            if (numA !== numB) {
+                return numA - numB;
+            }
+
+            const charA = a.replace(/\d+/g, '');
+            const charB = b.replace(/\d+/g, '');
+
+            const orderA = koreanOrder[charA] || 99;
+            const orderB = koreanOrder[charB] || 99;
+
+            return orderA - orderB;
+        });
+        return positions;
+    }
 
     useEffect(() => {
         const fetchApplicants = async () => {
@@ -39,13 +67,25 @@ export default function Applicants() {
             setError(null);
             try {
                 // --- 임시 테스트 데이터 ---
-                const testData: Applicant[] = [
-                    { id: 1, name: "헤응전사", level: 120, class: "히어로" },
-                    { id: 2, name: "헤응궁수", level: 115, class: "보우마스터" },
-                    { id: 3, name: "헤응법사", level: 130, class: "아크메이지(썬,콜)" },
+                const testData: TestApplicant[] = [
+                    { id: 1, name: "헤응전사", level: 120, class: "히어로", position: "1좌" },
+                    { id: 2, name: "헤응궁수", level: 115, class: "보우마스터", position: "1우" },
+                    { id: 3, name: "헤응법사", level: 130, class: "아크메이지(썬,콜)", position: "2좌" },
+                    { id: 4, name: "헤응도적", level: 125, class: "나이트로드", position: "2중" },
+                    { id: 5, name: "헤응해적", level: 122, class: "바이퍼", position: "2우" },
+                    { id: 6, name: "헤응무사", level: 128, class: "소울마스터", position: "3층" },
+                    { id: 7, name: "헤응기사", level: 128, class: "팔라딘", position: "1좌" },
                 ];
                 await new Promise(resolve => setTimeout(resolve, 1000)); // 로딩 시뮬레이션
-                setApplicants(testData);
+                setTestApplicants(testData);
+                if (testData.length > 0) {
+                    let initialPositions = room.roomPositions.length > 0 
+                        ? room.roomPositions.map(p => p.positionName) 
+                        : [...new Set(testData.map(a => a.position))];
+                    
+                    initialPositions = sortPositions(initialPositions);
+                    setSelectedPosition(initialPositions[0]);
+                }
                 // --- 테스트 데이터 끝 ---
 
             } catch (err) {
@@ -56,7 +96,7 @@ export default function Applicants() {
         };
 
         fetchApplicants();
-    }, []);
+    }, [room.roomPositions]);
 
     if (isLoading) {
         return <div className={style.loading}>로딩 중...</div>;
@@ -66,14 +106,37 @@ export default function Applicants() {
         return <div className={style.error}>오류: {error}</div>;
     }
 
+    const positions = sortPositions(room.roomPositions.length > 0 
+        ? room.roomPositions.map(p => p.positionName) 
+        : [...new Set(testApplicants.map(a => a.position))]);
+
+    const filteredApplicants = testApplicants.filter(
+        (testApplicant) => testApplicant.position === selectedPosition
+    );
+
     return (
         <div>
             <h3 className={style.title}>신청자 목록 ({applicants.length}명)</h3>
-            {applicants.length === 0 ? (
-                <p className={style.emptyMessage}>받은 신청이 없습니다.</p>
+            
+            <div className={style.tabContainer}>
+                {positions.map((position) => (
+                    <button
+                        key={position}
+                        onClick={() => setSelectedPosition(position)}
+                        className={cn(style.tabButton, {
+                            [style.tabButtonActive]: selectedPosition === position,
+                        })}
+                    >
+                        {position}
+                    </button>
+                ))}
+            </div>
+
+            {filteredApplicants.length === 0 ? (
+                <p className={style.emptyMessage}>선택된 포지션에 대한 신청이 없습니다.</p>
             ) : (
                 <ul className={style.list}>
-                    {applicants.map((applicant) => (
+                    {filteredApplicants.map((applicant) => (
                         <li key={applicant.id} className={style.listItem}>
                             <div className={style.applicantInfo}>
                                 <p className={style.applicantName}>
