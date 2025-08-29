@@ -89,6 +89,15 @@ export default function RoomPage() {
     };
 
     useEffect(() => {
+        if (roomError) {
+            console.log("Room Socket Error Object:", roomError);
+        }
+        if (isRoomsError) {
+            console.log("Rooms Fetch Error Object:", isRoomsError);
+        }
+    }, [roomError, isRoomsError]);
+
+        useEffect(() => {
         const loadRoomPageData = async () => {
             try {
                 const data = await fetchRoomPageData();
@@ -154,7 +163,7 @@ export default function RoomPage() {
                     {viewMode === 'OTHER_PARTY' ? (
                         <>
                             {isRoomsLoading && <p>Loading...</p>}
-                            {isRoomsError && <p>Error fetching data.</p>}
+                            {isRoomsError && <p>Error fetching data: {isRoomsError.message}</p>}
                             {!isRoomsLoading && !isRoomsError && (
                                 <Rooms roomList={roomList} handleRoomSelect={handleRoomSelect} selectedRoomId={selectedRoomId} />
                             )}
@@ -162,7 +171,11 @@ export default function RoomPage() {
                     ) : viewMode === 'MAKE_PARTY' ? (
                         <RoomCreate continents={continents} setHasRoom={setHasRoom} />
                     ) : (
-                        <MyRoom room={selectedRoom} applicants={applicants}/>
+                        <>
+                            {isRoomLoading && <p>내 방 정보를 불러오는 중...</p>}
+                            {roomError && <p>오류가 발생했습니다: {roomError.message}</p>}
+                            {selectedRoom && applicants && <MyRoom room={selectedRoom} applicants={applicants} />}
+                        </>
                     )}
                 </div>
             </div>
