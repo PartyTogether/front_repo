@@ -5,8 +5,14 @@ import { cn } from "@/lib/utils";
 import Chat from "./my_room/Chat";
 import Applicants from "./my_room/Applicants";
 import Settings from "./my_room/Settings";
+import { selectedRoom, Applicant } from "../RoomTypes";
 
-export default function MyRoom() {
+interface MyRoomProps{
+    room: selectedRoom;
+    applicants: Applicant[];
+}
+
+export default function MyRoom({ room, applicants }:MyRoomProps) {
     const [activeTab, setActiveTab] = useState("chat");
 
     const style = {
@@ -22,7 +28,7 @@ export default function MyRoom() {
             case "chat":
                 return <Chat />;
             case "applicants":
-                return <Applicants />;
+                return <Applicants room={room} applicants={applicants}/>;
             case "settings":
                 return <Settings />;
             default:

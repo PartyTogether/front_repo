@@ -1,5 +1,6 @@
-import useSWRSubscription from 'swr/subscription';
-import { selectedRoom } from '@/app/room/RoomTypes';
+import { Applicant, selectedRoom, ChatMessage } from '@/app/room/RoomTypes';
+import { RoomSocketData, WebSocketMessage } from '@/lib/hooks/types';
+import useSWRSubscription from "swr/subscription";
 
 const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
@@ -20,11 +21,40 @@ export const useRoomSocket = (roomId: string | null) => {
 
             socket.onmessage = (event: MessageEvent) => {
                 try {
-                    const receivedData: selectedRoom = JSON.parse(event.data);
-                    console.log("업데이트할 selectedRoom:",receivedData);
-                    next(null, receivedData);
+                    const message: WebSocketMessage = JSON.parse(event.data);
+                    console.log("받은 메시지:", message);
+
+                    if (message.type === 'initialData') {
+                        const { roomData, applicants } = message.payload;
+                        next(null, { roomData, applicants, chatMessages: [] }); // chatMessages를 빈 배열로 초기화
+
+                    } else if (message.type === 'roomUpdate') {
+                        const updatedRoomData = message.payload as selectedRoom;
+                        next((currentData: RoomSocketData | undefined) => ({
+                            ...currentData!,
+                            roomData: updatedRoomData,
+                        }));
+
+                    } else if (message.type === 'newChat') {
+                        const newMessage = message.payload as ChatMessage;
+                        next((currentData: RoomSocketData | undefined) => ({
+                            ...currentData!,
+                            chatMessages: [...currentData!.chatMessages, newMessage],
+                        }));
+
+                    } else if (message.type === 'newApplicant') {
+                        const newApplicant = message.payload as Applicant;
+                        next((currentData: RoomSocketData | undefined) => ({
+                            ...currentData!,
+                            applicants: [...currentData!.applicants, newApplicant],
+                        }));
+
+                    } else if (message.type === 'error') {
+                        console.error("서버 에러 메시지:", message.payload);
+                        next(new Error(message.payload.message));
+                    }
                 } catch (e) {
-                    console.error("메세지 오류:", e);
+                    console.error("메세지 구문분석 오류:", e);
                 }
             };
 

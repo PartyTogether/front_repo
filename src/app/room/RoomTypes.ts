@@ -4,8 +4,8 @@ export interface HuntingGround {
 }
 
 export interface Continent {
-    continentName: string;
-    continentImage: string;
+    id: number;
+    name: string;
     huntingGrounds: HuntingGround[];
 }
 
@@ -81,4 +81,23 @@ export interface createRoomReq {
 export interface applyToRoomReq {
     roomId: string,
     roomPositionName: string,
+}
+
+export interface Applicant {
+    applicantId: string;
+    memberId: string;
+    memberName: string;
+    memberLevel: number | null;
+    memberClass: string;
+    positionName: string;
+    memberSkills: memberSkill[];
+}
+
+
+export interface ChatMessage{
+    messageId: string;
+    messageCreatedAt: string;
+    messageContent: string;
+    memberId: string;
+    memberName: string;
 }
