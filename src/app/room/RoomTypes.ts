@@ -89,6 +89,7 @@ export interface Applicant {
     memberName: string;
     memberLevel: number | null;
     memberClass: string;
+    positionName: string;
     memberSkills: memberSkill[];
 }
 
