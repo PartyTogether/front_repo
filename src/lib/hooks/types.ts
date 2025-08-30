@@ -1,7 +1,7 @@
 import {Applicant, selectedRoom, ChatMessage} from "@/app/room/RoomTypes";
 
 export interface WebSocketMessage {
-    type: 'initialData' | 'roomUpdate' | 'error' | 'newChat' | 'newApplicant';
+    type: 'initialData' | 'roomUpdate' | 'error' | 'newChat' | 'newApplicant' | 'applicant_accepted' | 'applicant_canceled';
     payload: any;
 }
 

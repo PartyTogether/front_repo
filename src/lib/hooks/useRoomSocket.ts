@@ -71,6 +71,40 @@ export const useRoomSocket = (roomId: string | null) => {
                             });
                             break;
 
+                        case 'applicant_accepted':
+                            const { memberId,memberName,updatedRoomData } = message.payload;
+                            next(null, (currentData: RoomSocketData | undefined) => {
+                                if (!currentData) {
+                                    console.error("'applicant_accepted' 수신했지만, 초기 데이터가 없습니다.");
+                                    return currentData;
+                                }
+                                const updatedApplicants = currentData.applicants.filter(
+                                    (applicant) => applicant.memberId !== memberId
+                                );
+                                return {
+                                    ...currentData,
+                                    applicants: updatedApplicants,
+                                    roomData: updatedRoomData,
+                                };
+                            });
+                            break;
+
+                        case 'applicant_canceled':
+                            const { applicantId } = message.payload;
+                            next(null, (currentData: RoomSocketData | undefined)=> {
+                               if(!currentData){
+                                   console.error("'applicant_accepted' 수신했지만, 초기 데이터가 없습니다.");
+                                   return currentData;
+                               }
+                               const updateApplicants = currentData.applicants.filter(
+                                   (applicant) => applicant.memberId !== applicantId
+                               );
+                               return {
+                                   ...currentData,
+                                   applicants: updateApplicants,
+                               }
+                            });
+
                         case 'error':
                             console.error("서버 에러 메시지:", message.payload);
                             next(new Error(message.payload.message));

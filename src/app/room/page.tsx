@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Header from '@/components/Header';
 import RoomHero from '@/app/room/components/RoomHero';
 import Rooms from '@/app/room/components/Rooms';
@@ -10,7 +10,7 @@ import ViewMode from '@/app/room/components/ViewMode';
 import MyRoom from '@/app/room/components/MyRoom';
 import { fetchRoomPageData, useGetRooms, getMyRoom } from '@/lib/api/rooms';
 import RoomCreate from '@/app/room/components/RoomCreate';
-import { Continent, Room } from '@/app/room/RoomTypes';
+import { Continent, Room, Applicant } from '@/app/room/RoomTypes';
 import Swal from 'sweetalert2';
 import { useRoomSocket } from '@/lib/hooks/useRoomSocket';
 
@@ -24,12 +24,33 @@ export default function RoomPage() {
     const [roomList, setRoomList] = useState<Room[] | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [hasRoom, setHasRoom] = useState(true);
+    const [newApplicantIds, setNewApplicantIds] = useState<Set<string>>(new Set());
+    const prevApplicantsRef = useRef<Applicant[]>();
 
     const { rooms: fetchedRooms, isLoading: isRoomsLoading, isError: isRoomsError } = useGetRooms(selectedContinent, selectedHuntingGround);
     const { roomData: roomSocketData, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
     const selectedRoom = roomSocketData?.roomData;
     const applicants = roomSocketData?.applicants;
     const chatMessages = roomSocketData?.chatMessages;
+
+    useEffect(() => {
+        if (prevApplicantsRef.current && applicants && applicants.length > prevApplicantsRef.current.length) {
+            const prevIds = new Set(prevApplicantsRef.current.map(a => a.applicantId));
+            const newOnes = applicants.filter(a => !prevIds.has(a.applicantId));
+            if (newOnes.length > 0) {
+                setNewApplicantIds(currentIds => {
+                    const newIds = new Set(currentIds);
+                    newOnes.forEach(a => newIds.add(a.applicantId));
+                    return newIds;
+                });
+            }
+        }
+        prevApplicantsRef.current = applicants;
+    }, [applicants]);
+
+    const handleViewApplicants = () => {
+        setNewApplicantIds(new Set());
+    };
 
     const style = {
         roomPageDiv: 'min-h-screen bg-white',
@@ -174,7 +195,7 @@ export default function RoomPage() {
                         <>
                             {isRoomLoading && <p>내 방 정보를 불러오는 중...</p>}
                             {roomError && <p>오류가 발생했습니다: {roomError.message}</p>}
-                            {selectedRoom && applicants && <MyRoom room={selectedRoom} applicants={applicants} />}
+                            {selectedRoom && applicants && <MyRoom room={selectedRoom} applicants={applicants} newApplicantIds={newApplicantIds} onViewApplicants={handleViewApplicants} />}
                         </>
                     )}
                 </div>
