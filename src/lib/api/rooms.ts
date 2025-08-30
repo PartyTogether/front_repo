@@ -1,5 +1,5 @@
 import apiInstance from './apiInstance';
-import {applyToRoomReq, createRoomReq, Room, RoomMeta, selectedRoom,} from '@/app/room/RoomTypes';
+import {applyToRoomReq, createRoomReq, Room, RoomMeta, selectedRoom, AcceptToApply} from '@/app/room/RoomTypes';
 import useSWR from "swr";
 
 /**
@@ -105,5 +105,12 @@ export async function applyToRoom(data: applyToRoomReq) {
     const url = process.env.NEXT_PUBLIC_ROOM_APPLY!;
     console.log(`파티 가입 신청: roomId=${data.roomId}, positionName=${data.roomPositionName}`);
     const res = await apiInstance.post(url, data);
+    return res.data;
+}
+
+export async function acceptToApply(data: AcceptToApply){
+    const url = process.env.NEXT_PUBLIC_ROOM_APPLY_ACCEPT!;
+    console.log(`가입 신청 수락: applicantId=${data.applicantId}`);
+    const res = await apiInstance.post(url,data);
     return res.data;
 }

@@ -83,6 +83,11 @@ export interface applyToRoomReq {
     roomPositionName: string,
 }
 
+// 가입수락
+export interface AcceptToApply{
+    applicantId: string,
+}
+
 export interface Applicant {
     applicantId: string;
     memberId: string;

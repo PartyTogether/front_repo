@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -10,17 +10,27 @@ import { selectedRoom, Applicant } from "../RoomTypes";
 interface MyRoomProps{
     room: selectedRoom;
     applicants: Applicant[];
+    newApplicantIds: Set<string>;
+    onViewApplicants: () => void;
 }
 
-export default function MyRoom({ room, applicants }:MyRoomProps) {
+export default function MyRoom({ room, applicants, newApplicantIds, onViewApplicants }:MyRoomProps) {
     const [activeTab, setActiveTab] = useState("chat");
+
+    const handleTabClick = (tab: string) => {
+        if (tab === 'applicants') {
+            onViewApplicants();
+        }
+        setActiveTab(tab);
+    };
 
     const style = {
         container: "p-4 bg-white rounded-lg shadow-md",
         tabContainer: "flex border-b border-gray-200 mb-4",
-        tabButton: "py-2 px-4 text-lg font-medium text-gray-500 hover:text-gray-700 focus:outline-none",
+        tabButton: "relative py-2 px-4 text-lg font-medium text-gray-500 hover:text-gray-700 focus:outline-none",
         activeTabButton: "border-b-2 border-indigo-500 text-indigo-600",
         contentContainer: "mt-4",
+        newIndicator: "absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full",
     };
 
     const renderContent = () => {
@@ -28,7 +38,7 @@ export default function MyRoom({ room, applicants }:MyRoomProps) {
             case "chat":
                 return <Chat />;
             case "applicants":
-                return <Applicants room={room} applicants={applicants}/>;
+                return <Applicants room={room} applicants={applicants} newApplicantIds={newApplicantIds} />;
             case "settings":
                 return <Settings />;
             default:
@@ -41,19 +51,20 @@ export default function MyRoom({ room, applicants }:MyRoomProps) {
             <div className={style.tabContainer}>
                 <button
                     className={cn(style.tabButton, activeTab === "chat" && style.activeTabButton)}
-                    onClick={() => setActiveTab("chat")}
+                    onClick={() => handleTabClick("chat")}
                 >
                     채팅방
                 </button>
                 <button
                     className={cn(style.tabButton, activeTab === "applicants" && style.activeTabButton)}
-                    onClick={() => setActiveTab("applicants")}
+                    onClick={() => handleTabClick("applicants")}
                 >
                     신청자
+                    {newApplicantIds.size > 0 && <span className={style.newIndicator}></span>}
                 </button>
                 <button
                     className={cn(style.tabButton, activeTab === "settings" && style.activeTabButton)}
-                    onClick={() => setActiveTab("settings")}
+                    onClick={() => handleTabClick("settings")}
                 >
                     방 옵션 설정
                 </button>
