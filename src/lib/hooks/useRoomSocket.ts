@@ -29,7 +29,8 @@ export const useRoomSocket = (roomId: string | null) => {
                             next(null, { roomData, applicants, chatMessages: [] });
                             break;
 
-                        case 'roomUpdate':
+                        case 'leaveRoom': {
+                            const {memberName, updatedRoomData} = message.payload;
                             next(null, (currentData: RoomSocketData | undefined) => {
                                 if (!currentData) {
                                     console.error("'roomUpdate' 수신했지만, 초기 데이터가 없습니다.");
@@ -37,11 +38,11 @@ export const useRoomSocket = (roomId: string | null) => {
                                 }
                                 return {
                                     ...currentData,
-                                    roomData: message.payload as selectedRoom,
+                                    roomData: updatedRoomData,
                                 };
                             });
                             break;
-
+                        }
                         case 'newChat':
                             next(null, (currentData: RoomSocketData | undefined) => {
                                 if (!currentData) {
@@ -71,8 +72,8 @@ export const useRoomSocket = (roomId: string | null) => {
                             });
                             break;
 
-                        case 'applicant_accepted':
-                            const { memberId,memberName,updatedRoomData } = message.payload;
+                        case 'applicant_accepted': {
+                            const {memberId, memberName, updatedRoomData} = message.payload;
                             next(null, (currentData: RoomSocketData | undefined) => {
                                 if (!currentData) {
                                     console.error("'applicant_accepted' 수신했지만, 초기 데이터가 없습니다.");
@@ -88,7 +89,7 @@ export const useRoomSocket = (roomId: string | null) => {
                                 };
                             });
                             break;
-
+                        }
                         case 'applicant_canceled':
                             const { applicantId } = message.payload;
                             next(null, (currentData: RoomSocketData | undefined)=> {

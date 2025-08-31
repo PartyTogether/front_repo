@@ -25,7 +25,7 @@ export default function RoomPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [hasRoom, setHasRoom] = useState(true);
     const [newApplicantIds, setNewApplicantIds] = useState<Set<string>>(new Set());
-    const prevApplicantsRef = useRef<Applicant[]>();
+    const prevApplicantsRef = useRef<Applicant[]>([]);
 
     const { rooms: fetchedRooms, isLoading: isRoomsLoading, isError: isRoomsError } = useGetRooms(selectedContinent, selectedHuntingGround);
     const { roomData: roomSocketData, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
@@ -35,12 +35,12 @@ export default function RoomPage() {
 
     useEffect(() => {
         if (prevApplicantsRef.current && applicants && applicants.length > prevApplicantsRef.current.length) {
-            const prevIds = new Set(prevApplicantsRef.current.map(a => a.applicantId));
-            const newOnes = applicants.filter(a => !prevIds.has(a.applicantId));
+            const prevIds = new Set(prevApplicantsRef.current.map((a:Applicant) => a.applicantId));
+            const newOnes = applicants.filter((a:Applicant) => !prevIds.has(a.applicantId));
             if (newOnes.length > 0) {
                 setNewApplicantIds(currentIds => {
                     const newIds = new Set(currentIds);
-                    newOnes.forEach(a => newIds.add(a.applicantId));
+                    newOnes.forEach((a:Applicant) => newIds.add(a.applicantId));
                     return newIds;
                 });
             }
@@ -148,6 +148,11 @@ export default function RoomPage() {
         setSelectedRoomId(null);
     };
 
+    const handleLeaveSuccess = () => {
+        setHasRoom(false);
+        setViewMode('OTHER_PARTY');
+    };
+
     return (
         <div className={style.roomPageDiv}>
             <Header onMenuClick={() => setMenuOpen(true)} />
@@ -170,7 +175,7 @@ export default function RoomPage() {
                     <div className={style.roomInfoDiv}>
                         {isRoomLoading && <p>Loading room details...</p>}
                         {roomError && <p>Error loading room details.</p>}
-                        {selectedRoom && <RoomInfo room={selectedRoom} isLoggedIn={isLoggedIn} onClose={handleRoomInfoClose} viewMode={viewMode} />}
+                        {selectedRoom && <RoomInfo room={selectedRoom} isLoggedIn={isLoggedIn} onClose={handleRoomInfoClose} viewMode={viewMode} onLeaveSuccess={handleLeaveSuccess} />}
                     </div>
                 )}
 

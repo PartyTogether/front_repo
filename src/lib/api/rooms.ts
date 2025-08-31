@@ -108,9 +108,20 @@ export async function applyToRoom(data: applyToRoomReq) {
     return res.data;
 }
 
+/**
+ * 신청 수락
+ * @param data
+ */
 export async function acceptToApply(data: AcceptToApply){
     const url = process.env.NEXT_PUBLIC_ROOM_APPLY_ACCEPT!;
     console.log(`가입 신청 수락: applicantId=${data.applicantId}`);
     const res = await apiInstance.post(url,data);
+    return res.data;
+}
+
+export async function leaveToRoom(){
+    const url = process.env.NEXT_PUBLIC_ROOM_LEAVE!;
+    console.log('방 떠나기 요청');
+    const res = await apiInstance.delete(url);
     return res.data;
 }
