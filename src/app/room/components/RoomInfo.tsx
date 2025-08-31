@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { memberSkill, selectedRoom, applyToRoomReq } from '@/app/room/RoomTypes';
-import { applyToRoom } from "@/lib/api/rooms";
+import { applyToRoom, leaveToRoom } from "@/lib/api/rooms";
 import Swal from 'sweetalert2';
 
 interface RoomInfoProps {
@@ -12,9 +12,10 @@ interface RoomInfoProps {
     isLoggedIn: boolean;
     onClose: () => void;
     viewMode: string;
+    onLeaveSuccess: () => void;
 }
 
-export default function RoomInfo({ room, isLoggedIn, onClose, viewMode }: RoomInfoProps) {
+export default function RoomInfo({ room, isLoggedIn, onClose, viewMode, onLeaveSuccess }: RoomInfoProps) {
     const hostMember = room.roomMembers.find((member) => member.memberId === room.roomHost);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -98,13 +99,20 @@ export default function RoomInfo({ room, isLoggedIn, onClose, viewMode }: RoomIn
         }
     };
 
-    const handleLeaveParty = async () => {
-        await Swal.fire({ icon: 'info', title: '파티 떠나기', text: '파티를 떠나시겠습니까?', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: '확인', cancelButtonText: '취소' }).then((result) => {
-            if (result.isConfirmed) {
-                // 파티 떠나기 로직 추가
-                Swal.fire('완료', '파티를 떠났습니다.', 'success');
+    const handleLeave = async () => {
+        const result = await Swal.fire({ icon: 'warning', title: '파티 떠나기', text: '정말로 파티를 떠나시겠습니까?', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '떠나기', cancelButtonText: '취소' });
+
+        if (result.isConfirmed) {
+            try {
+                await leaveToRoom();
+                await Swal.fire('완료', '파티를 떠났습니다.', 'success');
+                onLeaveSuccess();
+                onClose();
+            } catch (error: any) {
+                const errorMessage = error.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
+                await Swal.fire('실패', errorMessage, 'error');
             }
-        });
+        }
     };
 
     useEffect(() => {
@@ -227,7 +235,7 @@ export default function RoomInfo({ room, isLoggedIn, onClose, viewMode }: RoomIn
             {viewMode === 'MY_PARTY' && (
                 <div className="mt-4">
                     <button
-                        onClick={handleLeaveParty}
+                        onClick={handleLeave}
                         className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                     >
                         파티 떠나기

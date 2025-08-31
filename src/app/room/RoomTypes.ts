@@ -4,8 +4,8 @@ export interface HuntingGround {
 }
 
 export interface Continent {
-    id: number;
-    name: string;
+    continentId: number;
+    continentName: string;
     huntingGrounds: HuntingGround[];
 }
 
