@@ -13,6 +13,7 @@ import RoomCreate from '@/app/room/components/RoomCreate';
 import { Continent, Room, Applicant } from '@/app/room/RoomTypes';
 import Swal from 'sweetalert2';
 import { useRoomSocket } from '@/lib/hooks/useRoomSocket';
+import { useMemberNotificationSocket } from '@/lib/hooks/useMemberNotificationSocket';
 
 export default function RoomPage() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -33,6 +34,38 @@ export default function RoomPage() {
     const applicants = roomSocketData?.applicants;
     const chatMessages = roomSocketData?.chatMessages;
 
+    const style = {
+        roomPageDiv: 'min-h-screen bg-white',
+        roomSection: 'max-w-6xl mx-auto transition-all duration-500 mt-10 gap-6 px-6',
+        isRoomSectionSelectedRoomTrue: 'flex flex-col lg:flex-row items-start ',
+        isRoomSectionSelectedRoomFalse: 'flex flex-col items-center',
+        roomInfoDiv: 'lg:w-3/6 animate-slide-in-left ',
+        isRoomsSelectedRoomTrue: 'lg:w-3/6 animate-slide-in-left',
+        isRoomsSelectedRoomFalse: 'w-full max-w-3xl',
+        items_center: 'flex flex-col items-center',
+    };
+
+
+    const handleRoomJoined = async () => {
+        const result = await Swal.fire({
+            icon: 'success',
+            title: '파티 참가 완료!',
+            text: '파티에 성공적으로 참가했습니다. 내 파티를 확인해주세요.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: '확인'
+        })
+        if(result.isConfirmed){
+            setHasRoom(true);
+            await handleViewModeChange('MY_PARTY');
+        }
+
+    };
+
+    useMemberNotificationSocket({
+        isLoggedIn,
+        onRoomJoined: handleRoomJoined,
+    });
+
     useEffect(() => {
         if (prevApplicantsRef.current && applicants && applicants.length > prevApplicantsRef.current.length) {
             const prevIds = new Set(prevApplicantsRef.current.map((a:Applicant) => a.applicantId));
@@ -52,16 +85,6 @@ export default function RoomPage() {
         setNewApplicantIds(new Set());
     };
 
-    const style = {
-        roomPageDiv: 'min-h-screen bg-white',
-        roomSection: 'max-w-6xl mx-auto transition-all duration-500 mt-10 gap-6 px-6',
-        isRoomSectionSelectedRoomTrue: 'flex flex-col lg:flex-row items-start ',
-        isRoomSectionSelectedRoomFalse: 'flex flex-col items-center',
-        roomInfoDiv: 'lg:w-3/6 animate-slide-in-left ',
-        isRoomsSelectedRoomTrue: 'lg:w-3/6 animate-slide-in-left',
-        isRoomsSelectedRoomFalse: 'w-full max-w-3xl',
-        items_center: 'flex flex-col items-center',
-    };
 
     const handleViewModeChange = async (mode: string) => {
         if (mode === 'MAKE_PARTY') {
@@ -109,16 +132,8 @@ export default function RoomPage() {
         setViewMode(mode);
     };
 
-    useEffect(() => {
-        if (roomError) {
-            console.log("Room Socket Error Object:", roomError);
-        }
-        if (isRoomsError) {
-            console.log("Rooms Fetch Error Object:", isRoomsError);
-        }
-    }, [roomError, isRoomsError]);
 
-        useEffect(() => {
+    useEffect(() => {
         const loadRoomPageData = async () => {
             try {
                 const data = await fetchRoomPageData();
@@ -152,6 +167,7 @@ export default function RoomPage() {
         setHasRoom(false);
         setViewMode('OTHER_PARTY');
     };
+
 
     return (
         <div className={style.roomPageDiv}>
