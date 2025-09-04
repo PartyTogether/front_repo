@@ -98,6 +98,10 @@ export interface Applicant {
     memberSkills: memberSkill[];
 }
 
+export interface ChatMessageReq{
+    roomId: string;
+    content: string;
+}
 
 export interface ChatMessage{
     messageId: string;
@@ -105,4 +109,5 @@ export interface ChatMessage{
     messageContent: string;
     memberId: string;
     memberName: string;
+    isMine: boolean;
 }
