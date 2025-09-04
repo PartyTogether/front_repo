@@ -21,12 +21,12 @@ export const useRoomSocket = (roomId: string | null) => {
             socket.onmessage = (event: MessageEvent) => {
                 try {
                     const message: WebSocketMessage = JSON.parse(event.data);
-                    console.log("받은 메시지:", message);
+                    console.log(`${message.type}의 메시지`,message);
 
                     switch (message.type) {
                         case 'initialData':
-                            const { roomData, applicants } = message.payload;
-                            next(null, { roomData, applicants, chatMessages: [] });
+                            const { roomData, applicants, chatMessages } = message.payload;
+                            next(null, { roomData, applicants, chatMessages: chatMessages || [] });
                             break;
 
                         case 'leaveRoom': {
@@ -49,7 +49,7 @@ export const useRoomSocket = (roomId: string | null) => {
                                     console.error("'newChat' 수신했지만, 초기 데이터가 없습니다.");
                                     return currentData;
                                 }
-                                const newMessage = message.payload as ChatMessage;
+                                const newMessage = message.payload.newMessage as ChatMessage;
                                 return {
                                     ...currentData,
                                     chatMessages: [...(currentData.chatMessages || []), newMessage],
@@ -137,6 +137,3 @@ export const useRoomSocket = (roomId: string | null) => {
         isLoading: !data && !error && !!roomId,
     };
 };
-
-
-

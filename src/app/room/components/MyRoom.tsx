@@ -5,16 +5,17 @@ import { cn } from "@/lib/utils";
 import Chat from "./my_room/Chat";
 import Applicants from "./my_room/Applicants";
 import Settings from "./my_room/Settings";
-import { selectedRoom, Applicant } from "../RoomTypes";
+import { selectedRoom, Applicant, ChatMessage } from "../RoomTypes";
 
 interface MyRoomProps{
     room: selectedRoom;
     applicants: Applicant[];
+    chatMessages: ChatMessage[];
     newApplicantIds: Set<string>;
     onViewApplicants: () => void;
 }
 
-export default function MyRoom({ room, applicants, newApplicantIds, onViewApplicants }:MyRoomProps) {
+export default function MyRoom({ room, applicants, chatMessages, newApplicantIds, onViewApplicants }:MyRoomProps) {
     const [activeTab, setActiveTab] = useState("chat");
 
     const handleTabClick = (tab: string) => {
@@ -36,7 +37,7 @@ export default function MyRoom({ room, applicants, newApplicantIds, onViewApplic
     const renderContent = () => {
         switch (activeTab) {
             case "chat":
-                return <Chat />;
+                return <Chat chatMessages={chatMessages} room={room} />;
             case "applicants":
                 return <Applicants room={room} applicants={applicants} newApplicantIds={newApplicantIds} />;
             case "settings":

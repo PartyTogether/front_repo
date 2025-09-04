@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import {useEffect, useState, useRef, useMemo} from 'react';
 import Header from '@/components/Header';
 import RoomHero from '@/app/room/components/RoomHero';
 import Rooms from '@/app/room/components/Rooms';
@@ -9,8 +9,9 @@ import { cn } from '@/lib/utils';
 import ViewMode from '@/app/room/components/ViewMode';
 import MyRoom from '@/app/room/components/MyRoom';
 import { fetchRoomPageData, useGetRooms, getMyRoom } from '@/lib/api/rooms';
+import { getMyMemberId } from '@/lib/api/member';
 import RoomCreate from '@/app/room/components/RoomCreate';
-import { Continent, Room, Applicant } from '@/app/room/RoomTypes';
+import { Continent, Room, Applicant, ChatMessage } from '@/app/room/RoomTypes';
 import Swal from 'sweetalert2';
 import { useRoomSocket } from '@/lib/hooks/useRoomSocket';
 import { useMemberNotificationSocket } from '@/lib/hooks/useMemberNotificationSocket';
@@ -23,16 +24,32 @@ export default function RoomPage() {
     const [continents, setContinents] = useState<Continent[]>([]);
     const [viewMode, setViewMode] = useState('OTHER_PARTY');
     const [roomList, setRoomList] = useState<Room[] | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [hasRoom, setHasRoom] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [hasRoom, setHasRoom] = useState(false);
     const [newApplicantIds, setNewApplicantIds] = useState<Set<string>>(new Set());
     const prevApplicantsRef = useRef<Applicant[]>([]);
+    const [myMemberId, setMyMemberId] = useState<string | null>(null);
 
     const { rooms: fetchedRooms, isLoading: isRoomsLoading, isError: isRoomsError } = useGetRooms(selectedContinent, selectedHuntingGround);
     const { roomData: roomSocketData, error: roomError, isLoading: isRoomLoading } = useRoomSocket(selectedRoomId);
     const selectedRoom = roomSocketData?.roomData;
     const applicants = roomSocketData?.applicants;
     const chatMessages = roomSocketData?.chatMessages;
+
+    const processedChatMessages = useMemo(() => {
+        if (!chatMessages || !myMemberId) {
+            return [];
+        }
+        return chatMessages
+            .filter((msg: ChatMessage) => typeof msg === 'object' && msg !== null && msg.memberId)
+            .map((msg: ChatMessage) => ({
+                ...msg,
+                isMine: String(msg.memberId) === String(myMemberId)
+
+            }));
+    }, [chatMessages, myMemberId]);
+
+
 
     const style = {
         roomPageDiv: 'min-h-screen bg-white',
@@ -44,7 +61,6 @@ export default function RoomPage() {
         isRoomsSelectedRoomFalse: 'w-full max-w-3xl',
         items_center: 'flex flex-col items-center',
     };
-
 
     const handleRoomJoined = async () => {
         const result = await Swal.fire({
@@ -58,7 +74,6 @@ export default function RoomPage() {
             setHasRoom(true);
             await handleViewModeChange('MY_PARTY');
         }
-
     };
 
     useMemberNotificationSocket({
@@ -84,7 +99,6 @@ export default function RoomPage() {
     const handleViewApplicants = () => {
         setNewApplicantIds(new Set());
     };
-
 
     const handleViewModeChange = async (mode: string) => {
         if (mode === 'MAKE_PARTY') {
@@ -132,19 +146,24 @@ export default function RoomPage() {
         setViewMode(mode);
     };
 
-
     useEffect(() => {
-        const loadRoomPageData = async () => {
+        const loadInitialData = async () => {
             try {
-                const data = await fetchRoomPageData();
-                setContinents(data.continents);
-                setIsLoggedIn(data.isLoggedIn);
-                setHasRoom(data.hasRoom);
+                const roomData = await fetchRoomPageData();
+                setContinents(roomData.continents);
+                setIsLoggedIn(roomData.isLoggedIn);
+                setHasRoom(roomData.hasRoom);
+
+                if (roomData.isLoggedIn) {
+                    const { memberId } = await getMyMemberId();
+                    setMyMemberId(memberId);
+                }
             } catch (error) {
-                console.error("방 메타 데이터 가져오는중 오류 발생", error);
+                console.error("초기 데이터 로딩 중 오류 발생", error);
+                setIsLoggedIn(false);
             }
         };
-        void loadRoomPageData();
+        void loadInitialData();
     }, []);
 
     useEffect(() => {
@@ -167,7 +186,6 @@ export default function RoomPage() {
         setHasRoom(false);
         setViewMode('OTHER_PARTY');
     };
-
 
     return (
         <div className={style.roomPageDiv}>
@@ -216,7 +234,7 @@ export default function RoomPage() {
                         <>
                             {isRoomLoading && <p>내 방 정보를 불러오는 중...</p>}
                             {roomError && <p>오류가 발생했습니다: {roomError.message}</p>}
-                            {selectedRoom && applicants && <MyRoom room={selectedRoom} applicants={applicants} newApplicantIds={newApplicantIds} onViewApplicants={handleViewApplicants} />}
+                            {selectedRoom && applicants && chatMessages && <MyRoom room={selectedRoom} applicants={applicants} chatMessages={processedChatMessages} newApplicantIds={newApplicantIds} onViewApplicants={handleViewApplicants} />}
                         </>
                     )}
                 </div>
