@@ -1,5 +1,7 @@
 import authInstance from "@/lib/api/authInstance";
 import {Member} from "@/app/member/page";
+import  apiInstance  from './apiInstance';
+import authInstance from './authInstance';
 
 
 export async function getMemberInfo() {
@@ -14,3 +16,9 @@ export async function updateMember(member: Member)    {
     const res = await authInstance.put('/api/member', member);
     return res.data;
 }
+
+export const getMyMemberId = async (): Promise<{ memberId: string }> => {
+    const url = process.env.NEXT_PUBLIC_MEMBER_ID!;
+    const res = await apiInstance.get(url);
+    return res.data;
+};
