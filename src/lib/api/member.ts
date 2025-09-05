@@ -1,8 +1,6 @@
 import authInstance from "@/lib/api/authInstance";
 import {Member} from "@/app/member/page";
 import  apiInstance  from './apiInstance';
-import authInstance from './authInstance';
-
 
 export async function getMemberInfo() {
     console.log("멤버 정보 가져오기");
