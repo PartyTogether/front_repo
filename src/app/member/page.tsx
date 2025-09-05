@@ -44,13 +44,13 @@ export default function MemberPage() {
                 setMemberInfo(res.member);
             } catch (err) {
                 console.error("멤버 정보 가져오기 실패", err);
-                alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+                alert("오류가 발생하였습니다.");
                 router.push("/"); // 메인으로 이동
             }
         };
 
         fetchMemberInfo();
-    }, [router]);
+    }, []);
 
     if (!memberInfo) {
         return null; // ✅ 아직 memberInfo 없을 때는 아무것도 안 보여줌

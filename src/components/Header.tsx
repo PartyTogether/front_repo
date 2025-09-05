@@ -5,8 +5,6 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authMe, logout } from "@/lib/api/auth";
-import {getMemberInfo} from "@/lib/api/member";
-import {FaCircleCheck} from "react-icons/fa6";
 
 interface Member {
     id: string;
@@ -28,11 +26,11 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                 const res = await authMe();
                 console.log("res : ", res);
                 setMember(
-                    { id: res.id,
-                      globalName: res.globalname,
-                      memberName: res.username,
-                      avatar: res.avatar
-                    });
+                { id: res.id,
+                  globalName: res.globalname,
+                  memberName: res.username,
+                  avatar: res.avatar
+                });
                 setIsLogin(true);
             } catch (error) {
                 setMember(null);
@@ -62,7 +60,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const logoutHandler = async () => {
         try {
             const res = await logout();
-            console.log("logout res : ", res);
             if(res.status === 200)  {
                 setMember(null);
                 setIsLogin(false);
