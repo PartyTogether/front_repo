@@ -54,7 +54,7 @@ export default function RoomPage() {
     const style = {
         roomPageDiv: 'min-h-screen bg-white',
         roomSection: 'max-w-6xl mx-auto transition-all duration-500 mt-10 gap-6 px-6',
-        isRoomSectionSelectedRoomTrue: 'flex flex-col lg:flex-row items-start ',
+        isRoomSectionSelectedRoomTrue: 'flex flex-col lg:flex-row items-center lg:items-start ',
         isRoomSectionSelectedRoomFalse: 'flex flex-col items-center',
         roomInfoDiv: 'lg:w-3/6 animate-slide-in-left ',
         isRoomsSelectedRoomTrue: 'lg:w-3/6 animate-slide-in-left',
