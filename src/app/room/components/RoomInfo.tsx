@@ -45,7 +45,7 @@ export default function RoomInfo({ room, isLoggedIn, onClose, viewMode, onLeaveS
         closeBtn: "absolute top-3 right-3 text-gray-400 hover:text-gray-700 focus:outline-none",
         titleDiv: "flex border-b items-center justify-between border-gray-300 mb-5",
         title: "text-xl font-bold w-100",
-        headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500",
+        headCount: "flex p-4 mr-1 font-semibold gap-2 text-gray-500 whitespace-nowrap",
         hostDiv: "flex items-center justify-center mb-5 pb-5 px-2 gap-2 text-gray-500 font-semibold border-b border-gray-300",
         floorSection: "mb-4 last:mb-0",
         floorTitle: "text-lg font-bold text-gray-800 mb-2",

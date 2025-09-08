@@ -1,21 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
 import Hero from "@/components/Hero";
 import DiscordBox from "@/components/DiscordBox";
 import Footer from "@/components/Footer";
 
 export default function Home() {
-    const [menuOpen, setMenuOpen] = useState(false);
-
     return (
         <>
-            <Header onMenuClick={() => setMenuOpen(true)} />
-            <Sidebar isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+            <Header />
 
-            <main className="pt-16 md:pl-64">
+            <main className="pt-16">
                 <section className="px-4 md:px-6 py-12">
                     <Hero />
                     <div className="flex flex-col md:flex-row justify-center gap-6 my-12">

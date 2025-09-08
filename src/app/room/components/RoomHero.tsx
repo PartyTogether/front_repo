@@ -28,7 +28,7 @@ export default function RoomHero({
         selectedContBtn:"text-[#5865F2] hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150",
         groundBtn: "px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150",
         selectedGroundBtn: "text-[#5865F2] hover:text-[#5865F2] hover:bg-gray-100 transition-all duration-150",
-        groundsDiv: "flex justify-center gap-2",
+        groundsDiv: "flex flex-wrap justify-center gap-2",
 
     }
 
