@@ -125,3 +125,14 @@ export async function leaveToRoom(){
     const res = await apiInstance.delete(url);
     return res.data;
 }
+
+/**
+ * 방 삭제 (방장)
+ * @param roomId
+ */
+export async function deleteRoom(roomId: string) {
+    const url = `${process.env.NEXT_PUBLIC_ROOM_DELETE!}/${roomId}`;
+    console.log(`파티 삭제 요청: roomId=${roomId}`);
+    const res = await apiInstance.delete(url);
+    return res.data;
+}

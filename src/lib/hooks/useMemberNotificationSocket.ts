@@ -5,11 +5,12 @@ const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
 interface MemberNotificationSocketOptions {
     onRoomJoined?: () => void;
+    onRoomDeleted?: () => void;
     isLoggedIn: boolean;
 }
 
 export const useMemberNotificationSocket = (options: MemberNotificationSocketOptions) => {
-    const { isLoggedIn, onRoomJoined  } = options;
+    const { isLoggedIn, onRoomJoined, onRoomDeleted  } = options;
 
     const { error } = useSWRSubscription(
         isLoggedIn ? `${WEBSOCKET_URL}/ws/member` : null,
@@ -31,6 +32,10 @@ export const useMemberNotificationSocket = (options: MemberNotificationSocketOpt
 
                     if (message.type === 'room_joined' && onRoomJoined) {
                         onRoomJoined();
+                    }
+
+                    if (message.type === 'room_deleted' && onRoomDeleted) {
+                        onRoomDeleted();
                     }
 
                 } catch (e) {
