@@ -13,9 +13,10 @@ interface MyRoomProps{
     chatMessages: ChatMessage[];
     newApplicantIds: Set<string>;
     onViewApplicants: () => void;
+    isHost: boolean;
 }
 
-export default function MyRoom({ room, applicants, chatMessages, newApplicantIds, onViewApplicants }:MyRoomProps) {
+export default function MyRoom({ room, applicants, chatMessages, newApplicantIds, onViewApplicants, isHost }:MyRoomProps) {
     const [activeTab, setActiveTab] = useState("chat");
 
     const handleTabClick = (tab: string) => {
@@ -41,7 +42,7 @@ export default function MyRoom({ room, applicants, chatMessages, newApplicantIds
             case "applicants":
                 return <Applicants room={room} applicants={applicants} newApplicantIds={newApplicantIds} />;
             case "settings":
-                return <Settings />;
+                return <Settings roomId={room.roomId} />;
             default:
                 return null;
         }
@@ -63,12 +64,14 @@ export default function MyRoom({ room, applicants, chatMessages, newApplicantIds
                     신청자
                     {newApplicantIds.size > 0 && <span className={style.newIndicator}></span>}
                 </button>
-                <button
-                    className={cn(style.tabButton, activeTab === "settings" && style.activeTabButton)}
-                    onClick={() => handleTabClick("settings")}
-                >
-                    방 옵션 설정
-                </button>
+                {isHost && (
+                    <button
+                        className={cn(style.tabButton, activeTab === "settings" && style.activeTabButton)}
+                        onClick={() => handleTabClick("settings")}
+                    >
+                        방 옵션 설정
+                    </button>
+                )}
             </div>
             <div className={style.contentContainer}>
                 {renderContent()}

@@ -4,7 +4,6 @@ import { createRoomReq, Continent } from '../RoomTypes';
 import { useState, useMemo, useEffect } from "react";
 import { createRoom } from "@/lib/api/rooms";
 import { cn } from "@/lib/utils";
-import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 interface PositionOption {
@@ -14,7 +13,7 @@ interface PositionOption {
 
 interface RoomMakeProps {
     continents: Continent[];
-    setHasRoom: (hasRoom: boolean) => void;
+    onCreationSuccess: () => void;
 }
 
 interface ParsedPositions {
@@ -22,8 +21,7 @@ interface ParsedPositions {
     support: string[];
 }
 
-export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
-    const router = useRouter();
+export default function RoomCreate({ continents, onCreationSuccess }: RoomMakeProps) {
     const [roomTitle, setRoomTitle] = useState("");
     const [roomDesc, setRoomDesc] = useState("");
     const [roomMinLevel, setRoomMinLevel] = useState(1);
@@ -96,10 +94,31 @@ export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
         return parsed;
     }, [roomContinent, roomHuntingGround, continents]);
 
+    useEffect(() => {
+        const allPositions = [
+            ...Object.values(parsedPositions.floors).flatMap(floor => [
+                ...floor.full,
+                ...floor.left,
+                ...floor.center,
+                ...floor.right,
+            ]),
+            ...parsedPositions.support,
+        ];
+
+        if (allPositions.length > 0) {
+            const initialOptions: Record<string, PositionOption> = {};
+            for (const pos of allPositions) {
+                initialOptions[pos] = { comment: '', isRecruiting: true };
+            }
+            setPositionOptions(initialOptions);
+        } else {
+            setPositionOptions({});
+        }
+    }, [parsedPositions]);
+
     const handleHuntingGroundClick = (groundName: string) => {
         setRoomHuntingGround(groundName);
         setHostPosition("");
-        setPositionOptions({});
     };
 
     const handlePositionOptionChange = (position: string, field: keyof PositionOption, value: string | boolean) => {
@@ -153,7 +172,7 @@ export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
             .map(([position, _]) => position);
 
         const roomPositionComments = Object.entries(positionOptions)
-            .filter(([_, option]) => option.isRecruiting && option.comment)
+            .filter(([_, option]) => option.isRecruiting)
             .reduce((acc, [position, option]) => {
                 acc[position] = option.comment;
                 return acc;
@@ -182,8 +201,7 @@ export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
                 confirmButtonText: '확인'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    setHasRoom(true);
-                    router.push('/room');
+                    onCreationSuccess();
                 }
             });
         } catch (err: any) {
@@ -310,7 +328,7 @@ export default function RoomCreate({ continents, setHasRoom }: RoomMakeProps) {
                         >
                             <option value="">포지션 선택</option>
                             {Object.keys(parsedPositions.floors).map(floor => (
-                                <optgroup label={`${floor}층`}>
+                                <optgroup key={floor} label={`${floor}층`}>
                                     {parsedPositions.floors[floor].full.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
                                     {parsedPositions.floors[floor].left.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}
                                     {parsedPositions.floors[floor].center.map(pos => <option key={pos} value={pos}>{formatPosition(pos)}</option>)}

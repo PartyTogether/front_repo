@@ -49,6 +49,8 @@ export default function RoomPage() {
             }));
     }, [chatMessages, myMemberId]);
 
+    const isHost = selectedRoom ? String(selectedRoom.roomHost) === myMemberId : false;
+
 
 
     const style = {
@@ -76,9 +78,25 @@ export default function RoomPage() {
         }
     };
 
+    const handleMyRoomDeleted = () => {
+        Swal.fire({
+            icon: 'info',
+            title: '파티가 삭제되었습니다.',
+            text: '참여하고 있던 파티가 방장에 의해 삭제되었습니다.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: '확인'
+        }).then(() => {
+            setHasRoom(false);
+            setSelectedRoomId(null);
+            setViewMode('OTHER_PARTY');
+
+        });
+    };
+
     useMemberNotificationSocket({
         isLoggedIn,
         onRoomJoined: handleRoomJoined,
+        onRoomDeleted: handleMyRoomDeleted,
     });
 
     useEffect(() => {
@@ -187,9 +205,14 @@ export default function RoomPage() {
         setViewMode('OTHER_PARTY');
     };
 
+    const handleCreationSuccess = () => {
+        setHasRoom(true);
+        void handleViewModeChange('MY_PARTY');
+    };
+
     return (
         <div className={style.roomPageDiv}>
-            <Header onMenuClick={() => setMenuOpen(true)} />
+            <Header/>
 
             <RoomHero
                 continents={continents}
@@ -229,12 +252,12 @@ export default function RoomPage() {
                             )}
                         </>
                     ) : viewMode === 'MAKE_PARTY' ? (
-                        <RoomCreate continents={continents} setHasRoom={setHasRoom} />
+                        <RoomCreate continents={continents} onCreationSuccess={handleCreationSuccess} />
                     ) : (
                         <>
                             {isRoomLoading && <p>내 방 정보를 불러오는 중...</p>}
                             {roomError && <p>오류가 발생했습니다: {roomError.message}</p>}
-                            {selectedRoom && applicants && chatMessages && <MyRoom room={selectedRoom} applicants={applicants} chatMessages={processedChatMessages} newApplicantIds={newApplicantIds} onViewApplicants={handleViewApplicants} />}
+                            {selectedRoom && applicants && chatMessages && <MyRoom room={selectedRoom} applicants={applicants} chatMessages={processedChatMessages} newApplicantIds={newApplicantIds} onViewApplicants={handleViewApplicants} isHost={isHost} />}
                         </>
                     )}
                 </div>
